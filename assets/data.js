@@ -124,6 +124,63 @@ export function lisible(couleur, fond, cible = CIBLE) {
 }
 
 /* ============================================================
+   Photos
+   ------------------------------------------------------------
+   La cellule « Photo » peut contenir trois choses, selon d'où
+   elle vient. On accepte les trois plutôt que d'imposer une
+   forme au tableur :
+
+   1. un lien Google Drive, tel que le formulaire le dépose
+      (« .../open?id=… » ou « .../file/d/…/view ») ;
+   2. n'importe quelle autre URL d'image, prise telle quelle ;
+   3. un simple nom de fichier, cherché dans photos/ du dépôt.
+
+   Pour Drive, on ne sert pas le fichier d'origine — une photo
+   de téléphone pèse plusieurs mégaoctets — mais la vignette
+   redimensionnée par Google. 400 px de large couvre le plus
+   grand usage de la page (la vue agrandie, 11 rem, en écran
+   à double densité).
+
+   Cet endpoint n'est pas documenté par Google : il peut cesser
+   de fonctionner. C'est acceptable ici parce que l'échec est
+   déjà géré — une image qui ne charge pas laisse les initiales,
+   et la page reste entière. Le jour où le site passe sur
+   Cloudflare, l'étape de construction pourra rapatrier ces
+   photos une bonne fois pour toutes : même origine, plus de
+   dépendance à Drive, et plus aucune adresse IP de visiteur
+   transmise à Google.
+   ============================================================ */
+
+const TAILLE_PHOTO = 400;
+
+/** Identifiant Drive : 25 caractères ou plus, lettres, chiffres, - et _ */
+const idDrive = (s) => {
+  const m = String(s).match(/\/d\/([-\w]{25,})|[?&]id=([-\w]{25,})/);
+  return m ? (m[1] || m[2]) : null;
+};
+
+const vignetteDrive = (id) =>
+  "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + TAILLE_PHOTO;
+
+/** Valeur de la colonne « Photo » -> URL utilisable dans un <img>, ou "". */
+export function urlPhoto(valeur) {
+  // Un formulaire qui autorise plusieurs fichiers colle plusieurs liens :
+  // on ne garde que le premier.
+  const s = String(valeur ?? "").split(/[,\n]/)[0].trim();
+  if (!s) return "";
+
+  if (/^https?:\/\//i.test(s)) {
+    if (/(drive|docs)\.google\.com/i.test(s)) {
+      const id = idDrive(s);
+      return id ? vignetteDrive(id) : s;
+    }
+    return s;
+  }
+  if (/^[-\w]{25,}$/.test(s)) return vignetteDrive(s); // un identifiant nu
+  return "photos/" + s;                                 // un fichier du dépôt
+}
+
+/* ============================================================
    Lecture CSV (RFC 4180 : guillemets, virgules et sauts de ligne
    à l'intérieur d'un champ, guillemet doublé pour l'échapper).
    ============================================================ */
@@ -218,7 +275,7 @@ function membresDepuisCSV(objets) {
     surnom:  col(o, "surnom", "pseudo"),
     pronoms: col(o, "pronoms", "pronom"),
     poles:   colonnesPoles(o),
-    photo:   col(o, "photo", "photo (fichier)"),
+    photo:   col(o, "photo") || colContient(o, "photo"),
     actif:   col(o, "actif", "active", "membre actif"),
   }));
 }
@@ -315,7 +372,7 @@ function normaliseMembres(brut, cle, avertir) {
         prenom, nom, surnom,
         pronoms: String(m.pronoms ?? "").trim(),
         poles,
-        photo: String(m.photo ?? "").trim(),
+        photo: urlPhoto(m.photo),
         /* Le nom affiché est le surnom, ou le prénom à défaut. C'est ce
            qu'on lit en gros sur la carte, donc c'est la clé de tri. */
         nomAffiche: surnom || prenom,

@@ -86,7 +86,7 @@ function avatarHTML(m, classe) {
   const couleur = p ? p.couleur : null;
   const style = p ? ` style="--c:${esc(p.couleur)};--cl:${esc(lisibleDe(p))}"` : "";
   const img = m.photo
-    ? `<img src="photos/${esc(m.photo)}" alt="" loading="lazy" decoding="async">`
+    ? `<img src="${esc(m.photo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
     : "";
   return `<div class="${classe}${couleur ? "" : " none"}"${style}><span>${esc(initiales(m))}</span>${img}</div>`;
 }

@@ -86,7 +86,7 @@ c'est elle que citent les colonnes `Pôle 1` et `Pôle 2` de l'onglet Membres.
 | `Surnom` | affiché en gros. À défaut, c'est le prénom |
 | `Pronoms` | **facultatif et déclaratif** : rempli par la personne, jamais deviné. Vide → rien ne s'affiche. Forme retenue au club : `lui/il`, `elle/elle`, `ellui/iel` |
 | `Pôle 1`, `Pôle 2` | le `Nom` d'un pôle. Ajouter une colonne `Pôle 3` suffit à en gérer trois, sans toucher au code |
-| `Photo` | facultative, absente pour l'instant. Nom de fichier dans `photos/` ; vide → initiales |
+| `Photo` | facultative. Lien Drive, URL d'image ou nom de fichier — voir **Les photos** plus bas. Vide → initiales |
 
 Retirer quelqu'un du club, c'est retirer sa ligne du tableur : il n'y a pas de
 colonne `Actif`.
@@ -115,6 +115,71 @@ perdues) et change l'URL des liens filtrés. Tout le reste se rattrape seul :
 un pôle inconnu est ignoré, une couleur absente devient grise, une photo
 introuvable retombe sur les initiales, un tableur injoignable laisse la
 dernière copie connue.
+
+## Les photos
+
+Le circuit : **un formulaire Google** demande le consentement et un fichier
+image → le fichier atterrit dans le Drive du club → la feuille de réponses
+reçoit un lien Drive → la colonne `Photo` de l'onglet `Membres` va chercher ce
+lien → le site l'affiche.
+
+### Les deux choses à faire une fois
+
+**1. Rendre le dossier des réponses lisible.** Les fichiers déposés par un
+formulaire sont **privés par défaut** : sans ça, le site n'affichera que des
+initiales, sans erreur visible. Dans le Drive, sur le dossier
+`<Nom du formulaire> (File responses)` : *Partager › Tous les utilisateurs
+disposant du lien › Lecteur*. Les fichiers déposés ensuite en héritent.
+
+Conséquence à assumer : ces photos deviennent accessibles à qui a le lien.
+Mais contrairement à des fichiers commités ici, **c'est réversible** — retirer
+le partage ou supprimer le fichier suffit, et la page retombe sur les initiales
+toute seule.
+
+**2. Relier les deux feuilles.** L'onglet `Membres` reste la source de vérité ;
+la colonne `Photo` va simplement chercher la réponse correspondante. C'est le
+tableur qui fait la jointure, pas le code :
+
+```
+=SIERREUR(RECHERCHEV($A2&" "&$B2; Réponses!$C:$E; 3; FAUX); "")
+```
+
+Deux principes à garder dans cette formule : la clé doit être quelque chose de
+stable — l'adresse e-mail collectée par le formulaire vaut mieux qu'un prénom —
+et **elle ne doit ramener le lien que si le consentement est « oui »**. Une
+personne qui a envoyé un fichier puis changé d'avis ne doit pas voir sa photo
+apparaître parce que le fichier existe encore.
+
+### Ce que la colonne accepte
+
+Trois formes, pour ne rien imposer au tableur :
+
+| Contenu de la cellule | Ce que fait le site |
+|---|---|
+| un lien Drive (`.../open?id=…` ou `.../file/d/…/view`) | affiche la **vignette** redimensionnée par Google, 400 px de large |
+| n'importe quelle autre URL d'image | l'utilise telle quelle |
+| un simple nom de fichier | le cherche dans `photos/` du dépôt |
+| vide | initiales, comme toujours |
+
+Le site ne sert jamais le fichier d'origine : une photo de téléphone pèse
+plusieurs mégaoctets, et 400 px couvrent le plus grand usage de la page — la
+vue agrandie, 11 rem, sur écran à double densité.
+
+### Ce qu'il faut savoir
+
+L'endpoint de vignette de Drive **n'est pas documenté** par Google et peut
+cesser de fonctionner. C'est un risque accepté, parce que l'échec est déjà
+géré : une image qui ne charge pas laisse les initiales et la page reste
+entière. Rien ne casse, l'affichage se dégrade.
+
+Par ailleurs, afficher les photos depuis Drive transmet l'adresse IP de chaque
+visiteur à Google — le même sujet que les polices, qu'on a réglé en les
+hébergeant ici.
+
+Les deux points disparaissent le jour du passage sur Cloudflare : l'étape de
+construction rapatriera les photos une bonne fois, servies depuis la même
+origine que le reste. Le tableur restera la source de vérité, et rien d'autre
+ne changera.
 
 ## Prochaine étape
 
