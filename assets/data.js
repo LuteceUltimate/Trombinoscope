@@ -162,16 +162,29 @@ function enObjets(lignes) {
   });
 }
 
-/** Première colonne trouvée parmi plusieurs noms possibles. */
+/** Première colonne trouvée parmi plusieurs noms exacts. */
 const col = (o, ...noms) => {
   for (const n of noms) if (o[n] !== undefined && o[n] !== "") return o[n];
+  return "";
+};
+
+/* Filet pour les en-têtes qu'on renomme : « Nombre personnes » est devenu
+   « Nombre personnes minimum » du jour au lendemain. On cherche donc aussi
+   la première colonne dont l'en-tête contient tous les mots donnés.
+   Réservé aux colonnes sans ambiguïté : surtout pas pour « nom », qui est
+   contenu dans « prenom » et dans « surnom ». */
+const colContient = (o, ...mots) => {
+  for (const k of Object.keys(o)) {
+    if (mots.every((m) => k.includes(m)) && o[k] !== "") return o[k];
+  }
   return "";
 };
 
 /** Toutes les colonnes « Pôle 1 », « Pôle 2 »… dans l'ordre. */
 const colonnesPoles = (o) =>
   Object.keys(o)
-    .filter((k) => /^pole\s*\d*$/.test(k))
+    // « Pôle 1 », « Pôle 2 », mais aussi « Pôle principal » / « Pôle secondaire »
+    .filter((k) => /^pole\b/.test(k))
     .sort()
     .map((k) => o[k])
     .filter(Boolean);
@@ -188,12 +201,13 @@ function polesDepuisCSV(objets) {
     // Dans le tableur, la colonne A « Nom » sert de clé : c'est elle que
     // les colonnes « Pôle 1 » et « Pôle 2 » de l'onglet Membres citent.
     nom:         col(o, "nom", "pole", "nom du pole"),
-    couleur:     col(o, "couleur", "color"),
-    description: col(o, "description", "descriptif"),
-    discord:     col(o, "discord", "salon", "lien discord", "salon discord"),
+    couleur:     col(o, "couleur", "color") || colContient(o, "couleur"),
+    description: col(o, "description", "descriptif") || colContient(o, "description"),
+    discord:     col(o, "discord", "lien discord", "salon discord") || colContient(o, "discord"),
     /* Effectif souhaité par le pôle. Jamais affiché tel quel : il sert
        uniquement à décider si l'encart « on cherche du monde » apparaît. */
-    voulu:       col(o, "nombre personnes", "nombre de personnes", "effectif"),
+    voulu:       col(o, "nombre personnes", "nombre de personnes", "effectif") ||
+                 colContient(o, "nombre", "personne"),
   }));
 }
 
@@ -371,6 +385,12 @@ export async function loadData() {
   return {
     poles, membres, parId,
     maj: src.maj ? new Date(src.maj) : null,
+    /* Un tableur publie par Google ne renvoie ni Last-Modified ni ETag :
+       impossible de savoir quand il a ete edite. Mais comme la page le lit
+       a chaque chargement, l'information utile n'est pas la date de la
+       derniere modification -- c'est le fait que ces donnees viennent
+       d'etre lues. C'est ce qu'on affiche. */
+    lu: new Date(),
     origine: src.origine,
     avertissements,
   };

@@ -11,8 +11,7 @@ const el = {
   resultats: $("#resultats"),
   compte: $("#count"),
   recherche: $("#q"),
-  maj: $("#maj"),
-  origine: $("#origine"),
+  fraicheur: $("#fraicheur"),
   zoom: $("#zoom"),
   zoomBody: $("#zoom-body"),
 };
@@ -309,19 +308,21 @@ function contraste(hex) {
 
   DONNEES.membres.forEach((m, i) => indexDe.set(m, i));
 
-  if (DONNEES.maj) {
-    el.maj.dateTime = DONNEES.maj.toISOString().slice(0, 10);
-    el.maj.textContent = DONNEES.maj.toLocaleDateString("fr-FR",
-      { day: "numeric", month: "long", year: "numeric" });
-  }
-
-  /* Une page datee est une page qu'on croit. Et si le tableur n'a pas
-     repondu, il faut le dire : afficher une vieille copie sans prevenir
-     est pire que ne rien afficher. */
-  if (DONNEES.origine !== "tableur" && el.origine) {
-    el.origine.hidden = false;
-    el.origine.textContent =
-      "Le tableur n’a pas répondu : cette liste est la dernière copie connue, elle peut être en retard.";
+  /* Une page datee est une page qu'on croit. Comme les donnees sont
+     relues a chaque chargement, la phrase honnete n'est pas "mise a jour
+     le X" mais "lue a l'instant". */
+  if (el.fraicheur) {
+    if (DONNEES.origine === "tableur" && DONNEES.lu) {
+      const q = DONNEES.lu.toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+      const h = DONNEES.lu.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+      el.fraicheur.innerHTML =
+        "Liste lue dans le tableur du bureau le " +
+        '<time datetime="' + DONNEES.lu.toISOString() + '">' + q + " à " + h + "</time>.";
+    } else {
+      el.fraicheur.textContent =
+        "Jeu de démonstration : le tableur n'est pas branché, ces personnes sont fictives.";
+      el.fraicheur.className = "alerte";
+    }
   }
 
   monterFiltres();
