@@ -136,14 +136,10 @@ body{
   margin-bottom:1.5rem;
 }
 .page-head .wrap{display:flex;align-items:center;gap:clamp(.9rem,3vw,1.5rem)}
-/* L'écusson est fourni sur un fond blanc carré : on le détoure en disque,
-   ce qui lui laisse un liseré blanc. C'est assumé — c'est un écusson, il
-   se porte comme un patch. Un PNG détouré permettrait de s'en passer. */
-.logo{
-  flex:0 0 auto;width:clamp(3.4rem,10vw,5rem);aspect-ratio:1;
-  border-radius:50%;overflow:hidden;background:#fff;
-}
-.logo img{width:100%;height:100%;object-fit:cover;display:block}
+/* L'écusson est détouré en amont : PNG à fond transparent, rogné au ras
+   du disque et reprojeté sur les deux couleurs de la charte pour effacer
+   le bruit du JPEG d'origine. Rien à masquer ici, juste à dimensionner. */
+.logo{flex:0 0 auto;width:clamp(3.6rem,10vw,5.25rem);height:auto;display:block}
 .titres{min-width:0}
 h1{
   font-family:var(--f-display);
@@ -151,11 +147,12 @@ h1{
   letter-spacing:-.01em;line-height:1;
   font-size:clamp(1.75rem,5.5vw,3rem);margin:0;
   color:var(--mais);
+  width:fit-content;max-width:100%;
 }
 /* Le filet court sous le titre : la signature graphique de la charte. */
 h1::after{
-  content:"";display:block;height:4px;width:2.6rem;
-  background:var(--mais);margin-top:.55rem;border-radius:2px;
+  content:"";display:block;height:4px;width:100%;
+  background:var(--mais);margin-top:.5rem;border-radius:2px;
 }
 .lede{color:rgba(255,255,255,.82);margin:.7rem 0 0;font-size:1rem;text-wrap:balance}
 .page-foot{
