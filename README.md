@@ -40,9 +40,12 @@ Aucune requête vers un domaine tiers : les polices sont hébergées ici.
 directement, à chaque chargement. Il n'y a rien à redéployer quand la liste
 change : on modifie une ligne, on recharge la page.
 
-Les fichiers `data/*.json` du dépôt ne sont plus qu'un **filet de secours** :
-ils ne servent que si Google ne répond pas, et la page dit alors clairement
-qu'elle affiche une copie qui peut être en retard.
+Les fichiers `data/*.json` du dépôt sont le **jeu de démonstration** : ils ne
+servent que tant que les deux URL ne sont pas renseignées. Une fois le tableur
+branché, la page ne retombe **pas** dessus en cas de panne — afficher des
+personnes fictives sous le titre « Trombinoscope » serait pire qu'une erreur
+franche. Le filet de secours ne redeviendra utile que le jour où l'instantané
+contiendra les vraies données, ce qui suppose un dépôt qui n'est pas public.
 
 ### Brancher le tableur
 
@@ -70,10 +73,9 @@ c'est elle que citent les colonnes `Pôle 1` et `Pôle 2` de l'onglet Membres.
 |---|---|
 | `Nom` | la clé, et ce qui s'affiche. **L'ordre A→Z en découle** : pas de colonne d'ordre |
 | `Couleur` | hexadécimal, `#E04A3C`. La palette vit ici, jamais dans le CSS |
-| `Nombre personnes` | **ignoré à l'affichage** : le compte est recalculé depuis l'onglet Membres. S'il est rempli et qu'il diverge, la console le signale — la colonne devient un garde-fou |
+| `Nombre personnes` | **effectif souhaité**, jamais affiché tel quel. S'il dépasse le nombre réel de membres, l'encart « on cherche du monde » apparaît et annonce combien il en manque. Vide = le pôle ne demande rien |
 | `Description` | une à deux phrases, écrites par le pôle |
-| `Discord` | *à ajouter* — lien du salon. Sans elle, aucun lien de contact ne s'affiche |
-| `Recrute` | *à ajouter* — `oui` affiche la carte « on cherche du monde » |
+| `Lien discord` | déjà présente, encore vide. Tant qu'elle l'est, aucun lien de contact ne s'affiche |
 
 ### Onglet `Membres`
 
@@ -84,12 +86,26 @@ c'est elle que citent les colonnes `Pôle 1` et `Pôle 2` de l'onglet Membres.
 | `Surnom` | affiché en gros. À défaut, c'est le prénom |
 | `Pronoms` | **facultatif et déclaratif** : rempli par la personne, jamais deviné. Vide → rien ne s'affiche. Forme retenue au club : `lui/il`, `elle/elle`, `ellui/iel` |
 | `Pôle 1`, `Pôle 2` | le `Nom` d'un pôle. Ajouter une colonne `Pôle 3` suffit à en gérer trois, sans toucher au code |
-| `Photo` | *à ajouter* — nom de fichier dans `photos/`. Vide → initiales |
-| `Actif` | *à ajouter* — `non` conserve la ligne sans l'afficher, plutôt que de la supprimer |
+| `Photo` | facultative, absente pour l'instant. Nom de fichier dans `photos/` ; vide → initiales |
+
+Retirer quelqu'un du club, c'est retirer sa ligne du tableur : il n'y a pas de
+colonne `Actif`.
 
 Les noms de colonnes sont appariés **sans tenir compte des accents, de la casse
 ni des espaces** : `Prénom`, `prenom` et `PRÉNOM` sont la même colonne. Idem
-pour les noms de pôles cités par les membres : `TOURNOIS` trouve `Tournois`.
+pour les noms de pôles cités par les membres : `TOURNOIS` trouve `Tournois`,
+et `Coaching` trouve `Coaching 🫡` — les emoji des noms de pôles ne cassent
+rien, ni l'appariement ni les URL de filtre.
+
+### Les couleurs restent lisibles quoi qu'on écrive
+
+La palette vient du tableur, donc n'importe quelle couleur peut y être saisie —
+y compris un jaune très clair, illisible en texte sur fond blanc. Le site ne se
+sert de la couleur brute que pour les aplats : liseré, pastille active, fond
+teinté. Pour le **texte**, il en calcule une variante à teinte constante, dont
+seule la clarté est déplacée jusqu'à dépasser le seuil de contraste WCAG AA
+(4,5:1) — une fois pour le thème clair, une fois pour le sombre. Avec la palette
+actuelle, les douze pôles passent le seuil dans les deux thèmes.
 
 ### Ce qui casse, et ce qui ne casse pas
 

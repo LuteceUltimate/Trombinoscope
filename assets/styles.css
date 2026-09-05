@@ -18,6 +18,13 @@
   font-display:swap;
 }
 
+/* Deux variables portent la couleur d un pole :
+     --c   la couleur du tableur telle quelle, pour les aplats
+           (lisere, pastille active, fond teinte)
+     --cl  la meme, eclaircie ou assombrie jusqu a etre lisible sur le
+           fond de la page. Calculee en JS car elle depend du theme.
+   Voir lisible() dans data.js. */
+
 /* ---------- Jetons : clair par défaut ---------- */
 :root{
   --ground:#F0F3EE;
@@ -153,7 +160,7 @@ h1{
   flex:0 0 auto;font-family:inherit;font-size:.74rem;font-weight:700;cursor:pointer;
   border:0;border-radius:99px;padding:.4rem .7rem;white-space:nowrap;
   background:color-mix(in srgb, var(--c) 14%, var(--mixbase));
-  color:color-mix(in srgb, var(--c) 72%, var(--ink));
+  color:var(--cl, var(--ink));
   box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c) 32%, transparent);
   transition:background .14s ease,color .14s ease;
 }
@@ -177,7 +184,7 @@ h1{
 .band-title h2{
   margin:0;font-family:var(--f-display);font-variation-settings:"wdth" 112;
   font-weight:800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.005em;
-  color:color-mix(in srgb, var(--c) 62%, var(--ink));
+  color:var(--cl, var(--ink));
 }
 .band-n{font-size:.72rem;font-weight:700;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .band-desc{font-size:.85rem;line-height:1.45;color:var(--ink-2);margin:0;max-width:52ch}
@@ -185,7 +192,7 @@ h1{
   justify-self:start;margin-top:.15rem;
   font-size:.74rem;font-weight:700;text-decoration:none;padding:.32rem .6rem;border-radius:6px;
   background:color-mix(in srgb, var(--c) 15%, var(--mixbase));
-  color:color-mix(in srgb, var(--c) 72%, var(--ink));
+  color:var(--cl, var(--ink));
   display:inline-flex;align-items:center;gap:.35rem;
 }
 .blink:hover{background:color-mix(in srgb, var(--c) 26%, var(--mixbase))}
@@ -194,7 +201,7 @@ h1{
 .recruit{
   border:1.5px dashed color-mix(in srgb, var(--c) 40%, transparent);border-radius:11px;
   display:grid;place-content:center;text-align:center;padding:.9rem .7rem;gap:.2rem;
-  min-height:8rem;color:color-mix(in srgb, var(--c) 65%, var(--ink));
+  min-height:8rem;color:var(--cl, var(--ink));
 }
 .recruit b{font-size:.82rem;font-weight:750;display:block}
 .recruit span{font-size:.72rem;color:var(--ink-3);line-height:1.35;display:block}
@@ -217,7 +224,7 @@ h1{
   display:grid;place-items:center;overflow:hidden;
   font-family:var(--f-display);font-weight:800;font-size:.95rem;
   background:color-mix(in srgb, var(--c) 20%, var(--mixbase));
-  color:color-mix(in srgb, var(--c) 74%, var(--ink));
+  color:var(--cl, var(--ink));
   box-shadow:inset 0 0 0 1.5px color-mix(in srgb, var(--c) 45%, transparent);
 }
 .avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
@@ -238,7 +245,7 @@ h1{
   font-size:.665rem;font-weight:700;letter-spacing:.02em;line-height:1;
   padding:.3rem .45rem;border-radius:5px;
   background:color-mix(in srgb, var(--c) 16%, var(--mixbase));
-  color:color-mix(in srgb, var(--c) 70%, var(--ink));
+  color:var(--cl, var(--ink));
   box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c) 30%, transparent);
 }
 .chip.empty{background:var(--surface-3);color:var(--ink-3);box-shadow:inset 0 0 0 1px var(--line-2);font-weight:600}
@@ -263,7 +270,7 @@ h1{
   display:grid;place-items:center;overflow:hidden;
   font-family:var(--f-display);font-weight:800;font-size:clamp(2rem,11vw,3rem);
   background:color-mix(in srgb, var(--c) 20%, var(--mixbase));
-  color:color-mix(in srgb, var(--c) 74%, var(--ink));
+  color:var(--cl, var(--ink));
   box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--c) 45%, transparent);
 }
 .zoom-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}

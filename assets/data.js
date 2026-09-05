@@ -17,7 +17,8 @@
    Laisser vide fait tourner le site sur les instantanés locaux.
    ------------------------------------------------------------ */
 export const SOURCE = {
-  polesCSV:   "",
+  polesCSV:   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQdhs4kUMHzROG-BMBG44YE4eRa6AJ1dqtWGaeGNVPZ52a2mPPU7LzIAD0DIa2Ids_IqMyVVC38BGxk/pub?gid=299606187&single=true&output=csv",
+  // TODO l'onglet Membres n'est pas encore publie : gid=0 repond 401.
   membresCSV: "",
 
   // Filet de secours, toujours présent dans le dépôt.
@@ -46,6 +47,80 @@ const toBool = (v, defaut = true) => {
   if (typeof v === "boolean") return v;
   return !/^(non|no|false|faux|0)$/i.test(String(v).trim());
 };
+
+/* ============================================================
+   Lisibilité des couleurs
+   ------------------------------------------------------------
+   La palette vient du tableur : n'importe qui peut y écrire un
+   jaune très clair ou un brun très sombre. Prendre la couleur
+   brute comme couleur de texte donnerait, tôt ou tard, un titre
+   illisible. On garde donc la teinte et la saturation, et on ne
+   déplace que la clarté jusqu'à obtenir un contraste correct sur
+   le fond de la page — une fois pour le thème clair, une fois
+   pour le sombre. La couleur brute reste utilisée partout où
+   elle est un aplat : liseré, pastille active, pavé de palette.
+   ============================================================ */
+
+const FOND_CLAIR = [240, 243, 238];  // --ground, thème clair
+const FOND_SOMBRE = [13, 31, 23];    // --ground, thème sombre
+const CIBLE = 4.5;                   // WCAG AA, texte normal
+
+const hex2rgb = (h) => {
+  const x = String(h).replace("#", "").trim();
+  if (!/^[0-9a-fA-F]{6}$/.test(x)) return null;
+  return [0, 2, 4].map((i) => parseInt(x.slice(i, i + 2), 16));
+};
+const rgb2hex = (c) =>
+  "#" + c.map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
+const canal = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+const luminance = (c) => 0.2126 * canal(c[0]) + 0.7152 * canal(c[1]) + 0.0722 * canal(c[2]);
+const contraste = (a, b) => {
+  const x = luminance(a), y = luminance(b);
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+};
+
+function rgb2hsl(rgb) {
+  const r = rgb[0] / 255, g = rgb[1] / 255, b = rgb[2] / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
+  if (max === min) return [0, 0, l];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h;
+  if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+  else if (max === g) h = ((b - r) / d + 2) / 6;
+  else h = ((r - g) / d + 4) / 6;
+  return [h, s, l];
+}
+function hsl2rgb(hsl) {
+  const h = hsl[0], s = hsl[1], l = hsl[2];
+  if (s === 0) { const v = l * 255; return [v, v, v]; }
+  const f = (p, q, t) => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+  };
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
+  return [f(p, q, h + 1 / 3), f(p, q, h), f(p, q, h - 1 / 3)].map((v) => v * 255);
+}
+
+/** Variante de la couleur, lisible sur le fond donné, à teinte constante. */
+export function lisible(couleur, fond, cible = CIBLE) {
+  const rgb = hex2rgb(couleur);
+  if (!rgb) return luminance(fond) > 0.5 ? "#111111" : "#EEEEEE";
+  const hsl = rgb2hsl(rgb);
+  const fondClair = luminance(fond) > 0.5;
+  let l = hsl[2];
+  for (let i = 0; i <= 100; i++) {
+    const c = hsl2rgb([hsl[0], hsl[1], l]);
+    if (contraste(c, fond) >= cible) return rgb2hex(c);
+    l += fondClair ? -0.01 : 0.01;
+    if (l < 0 || l > 1) break;
+  }
+  return fondClair ? "#111111" : "#EEEEEE";
+}
 
 /* ============================================================
    Lecture CSV (RFC 4180 : guillemets, virgules et sauts de ligne
@@ -115,9 +190,9 @@ function polesDepuisCSV(objets) {
     couleur:     col(o, "couleur", "color"),
     description: col(o, "description", "descriptif"),
     discord:     col(o, "discord", "salon", "lien discord", "salon discord"),
-    recrute:     col(o, "recrute", "recrutement", "cherche du monde"),
-    // Colonne facultative, jamais affichée : elle sert de contre-vérification.
-    attendu:     col(o, "nombre personnes", "nombre de personnes", "effectif"),
+    /* Effectif souhaité par le pôle. Jamais affiché tel quel : il sert
+       uniquement à décider si l'encart « on cherche du monde » apparaît. */
+    voulu:       col(o, "nombre personnes", "nombre de personnes", "effectif"),
   }));
 }
 
@@ -193,8 +268,9 @@ function normalisePoles(brut, avertir) {
         couleur: String(p.couleur || GRIS).trim(),
         description: String(p.description ?? "").trim(),
         discord: String(p.discord ?? "").trim(),
-        recrute: toBool(p.recrute, false),
-        attendu: p.attendu === "" || p.attendu === undefined ? null : Number(p.attendu),
+        voulu: p.voulu === "" || p.voulu === undefined ? null : Number(p.voulu),
+        txtClair: lisible(p.couleur || GRIS, FOND_CLAIR),
+        txtSombre: lisible(p.couleur || GRIS, FOND_SOMBRE),
       };
     })
     .filter(Boolean)
@@ -211,7 +287,10 @@ function normaliseMembres(brut, cle, avertir) {
       const nom = String(m.nom ?? "").trim();
       const poles = [];
       for (const ref of toList(m.poles)) {
-        const id = cle.get(norm(ref));
+        /* On essaie le libellé tel quel, puis sa forme sans emoji ni
+           ponctuation : le tableur écrit « Coaching 🫡 » dans l'onglet
+           Pôles, un membre peut très bien écrire « Coaching ». */
+        const id = cle.get(norm(ref)) || cle.get(slug(ref));
         if (!id) { avertir(`membre « ${prenom} ${nom} » : pôle inconnu « ${ref} », ignoré`); continue; }
         if (!poles.includes(id)) poles.push(id);
       }
@@ -242,36 +321,42 @@ export async function loadData() {
   const avertissements = [];
   const avertir = (msg) => avertissements.push(msg);
 
-  let src;
-  if (SOURCE.polesCSV && SOURCE.membresCSV) {
-    try {
-      src = await depuisTableur();
-    } catch (err) {
-      avertir(`tableur injoignable (${err.message}) — affichage de la dernière copie connue`);
-      src = await depuisInstantane();
-    }
-  } else {
-    src = await depuisInstantane();
-  }
+  /* Tant que les deux URL ne sont pas renseignées, le site tourne sur les
+     instantanés du dépôt — le jeu de démonstration.
+
+     Une fois le tableur branché, on NE retombe PAS dessus en cas de panne :
+     afficher des personnes fictives sous le titre « Trombinoscope » serait
+     pire qu'une erreur franche. Le filet de secours ne redeviendra utile
+     que le jour où l'instantané contiendra les vraies données — ce qui
+     suppose un dépôt qui n'est pas public. */
+  const branche = Boolean(SOURCE.polesCSV && SOURCE.membresCSV);
+  const src = branche ? await depuisTableur() : await depuisInstantane();
 
   const poles = normalisePoles(src.poles, avertir);
 
   /* On accepte qu'un membre cite un pôle par son identifiant OU par son nom :
      le tableur cite des noms, les instantanés JSON citent des identifiants. */
   const cle = new Map();
-  for (const p of poles) { cle.set(norm(p.id), p.id); cle.set(norm(p.nom), p.id); }
+  for (const p of poles) {
+    cle.set(norm(p.id), p.id);   // « coaching »
+    cle.set(norm(p.nom), p.id);  // « coaching 🫡 », emoji compris
+  }
 
   const membres = normaliseMembres(src.membres, cle, avertir);
 
-  /* La colonne « Nombre personnes » n'est jamais affichée — le compte est
-     recalculé. Mais si elle est remplie et qu'elle diverge, c'est le signe
-     que le tableur a été édité à la main quelque part : on le dit. */
+  /* « Nombre personnes » est l'effectif souhaité par le pôle. Le compte réel
+     est toujours recalculé ; la comparaison des deux décide simplement si
+     l'encart « on cherche du monde » s'affiche, et combien il en manque.
+     Colonne vide = le pôle ne demande rien. */
   for (const p of poles) {
-    if (p.attendu === null || Number.isNaN(p.attendu)) continue;
     const reel = membres.filter((m) => m.poles.includes(p.id)).length;
-    if (reel !== p.attendu)
-      avertir(`pôle « ${p.nom} » : la colonne « Nombre personnes » annonce ${p.attendu}, ` +
-              `l'onglet Membres en compte ${reel}. C'est le compte réel qui est affiché.`);
+    if (p.voulu === null || Number.isNaN(p.voulu) || p.voulu <= reel) {
+      p.recrute = false;
+      p.manque = 0;
+    } else {
+      p.recrute = true;
+      p.manque = p.voulu - reel;
+    }
   }
 
   if (avertissements.length) {
