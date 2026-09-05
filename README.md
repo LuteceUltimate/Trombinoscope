@@ -184,14 +184,20 @@ Trois formes, pour ne rien imposer au tableur :
 
 | Contenu de la cellule | Ce que fait le site |
 |---|---|
-| un lien Drive (`.../open?id=…` ou `.../file/d/…/view`) | affiche la **vignette** redimensionnée par Google, 400 px de large |
+| un lien Drive (`.../open?id=…` ou `.../file/d/…/view`) | affiche la **vignette** redimensionnée par Google : 200 px sur la carte, 400 px dans la vue agrandie |
 | n'importe quelle autre URL d'image | l'utilise telle quelle |
 | un simple nom de fichier | le cherche dans `photos/` du dépôt |
 | vide | initiales, comme toujours |
 
-Le site ne sert jamais le fichier d'origine : une photo de téléphone pèse
-plusieurs mégaoctets, et 400 px couvrent le plus grand usage de la page — la
-vue agrandie, 11 rem, sur écran à double densité.
+Le site ne sert jamais le fichier d'origine — une photo de téléphone pèse
+plusieurs mégaoctets — mais deux tailles de vignette. La carte affiche un rond
+d'une cinquantaine de pixels : 200 px la couvrent jusqu'à une densité de
+quatre. La vue agrandie monte à 11 rem et déclare les deux tailles, laissant le
+navigateur choisir : sur un écran ordinaire il réutilise celle que la carte a
+déjà téléchargée, et ne va chercher la grande que là où elle se voit.
+
+Ce détail pèse : à soixante profils, servir 400 px partout représentait 2,9 Mo
+de photos contre 1,0 aujourd'hui.
 
 ### Ce qu'il faut savoir
 

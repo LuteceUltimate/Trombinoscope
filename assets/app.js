@@ -86,7 +86,7 @@ const initiales = (m) => (m.prenom[0] + (m.nom[0] || "")).toUpperCase();
 
 /* La photo se superpose aux initiales : si elle échoue, on la retire
    et les initiales sont déjà là. Aucun trou possible dans la grille. */
-function avatarHTML(m, classe) {
+function avatarHTML(m, classe, grande) {
   const principal = m.poles[0];
   const p = principal ? DONNEES.parId.get(principal) : null;
   const couleur = p ? p.couleur : null;
@@ -94,9 +94,16 @@ function avatarHTML(m, classe) {
   const style = p
     ? ` style="--c:${esc(p.couleur)};--cl:${esc(lisibleDe(p))};${cadre}"`
     : ` style="${cadre}"`;
-  const img = m.photo
-    ? `<img src="${esc(m.photo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
-    : "";
+  /* La carte reçoit la petite vignette. La fiche agrandie déclare les deux
+     et laisse le navigateur choisir : sur un écran ordinaire il garde celle
+     que la carte a déjà téléchargée — la photo apparaît donc instantanément
+     — et il ne va chercher la grande que là où elle se voit vraiment. */
+  const img = !m.photo
+    ? ""
+    : grande
+      ? `<img src="${esc(m.photoGrande)}" srcset="${esc(m.photo)} 1x, ${esc(m.photoGrande)} 2x"` +
+        ` alt="" decoding="async" referrerpolicy="no-referrer">`
+      : `<img src="${esc(m.photo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`;
   return `<div class="${classe}${couleur ? "" : " none"}"${style}><span>${esc(initiales(m))}</span>${img}</div>`;
 }
 
@@ -245,7 +252,7 @@ function ouvrirZoom(m) {
   <div class="rail">${railHTML(m)}</div>
   <button type="button" class="zoom-close" data-close aria-label="Fermer">&#10005;</button>
   <div class="zoom-in">
-    ${avatarHTML(m, "zoom-av")}
+    ${avatarHTML(m, "zoom-av", true)}
     <p class="zoom-name">${esc(m.nomAffiche)}</p>
     ${m.pronoms ? `<span class="zoom-pron">${esc(m.pronoms)}</span>` : ""}
     <p class="zoom-full">${esc(m.prenom)} ${esc(m.nom)}</p>

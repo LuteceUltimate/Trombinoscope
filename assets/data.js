@@ -176,9 +176,14 @@ export function lisible(couleur, fond, cible = CIBLE) {
 
    Pour Drive, on ne sert pas le fichier d'origine — une photo
    de téléphone pèse plusieurs mégaoctets — mais la vignette
-   redimensionnée par Google. 400 px de large couvre le plus
-   grand usage de la page (la vue agrandie, 11 rem, en écran
-   à double densité).
+   redimensionnée par Google, et en deux tailles.
+
+   La carte affiche un rond de 3,1 rem, soit une cinquantaine de
+   pixels : 200 px la couvrent jusqu'à une densité de quatre. La
+   vue agrandie monte à 11 rem et demande donc 400 px sur un écran
+   à double densité. Servir 400 px partout revenait à payer trois
+   fois le poids d'une vignette pour un rond de 50 px — 50 Ko
+   contre 17, mesurés, et soixante profils dans la page.
 
    Cet endpoint n'est pas documenté par Google : il peut cesser
    de fonctionner. C'est acceptable ici parce que l'échec est
@@ -190,7 +195,8 @@ export function lisible(couleur, fond, cible = CIBLE) {
    transmise à Google.
    ============================================================ */
 
-const TAILLE_PHOTO = 400;
+const TAILLE_CARTE = 200;  // le rond de la carte
+const TAILLE_FICHE = 400;  // la vue agrandie
 
 /** Identifiant Drive : 25 caractères ou plus, lettres, chiffres, - et _ */
 const idDrive = (s) => {
@@ -198,11 +204,13 @@ const idDrive = (s) => {
   return m ? (m[1] || m[2]) : null;
 };
 
-const vignetteDrive = (id) =>
-  "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + TAILLE_PHOTO;
+const vignetteDrive = (id, taille) =>
+  "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + taille;
 
-/** Valeur de la colonne « Photo » -> URL utilisable dans un <img>, ou "". */
-export function urlPhoto(valeur) {
+/** Valeur de la colonne « Photo » -> URL utilisable dans un <img>, ou "".
+    La taille ne concerne que les vignettes Drive : une URL d'image
+    quelconque ou un fichier du dépôt n'existent qu'en une seule taille. */
+export function urlPhoto(valeur, taille = TAILLE_CARTE) {
   // Un formulaire qui autorise plusieurs fichiers colle plusieurs liens :
   // on ne garde que le premier.
   const s = String(valeur ?? "").split(/[,\n]/)[0].trim();
@@ -211,11 +219,11 @@ export function urlPhoto(valeur) {
   if (/^https?:\/\//i.test(s)) {
     if (/(drive|docs)\.google\.com/i.test(s)) {
       const id = idDrive(s);
-      return id ? vignetteDrive(id) : s;
+      return id ? vignetteDrive(id, taille) : s;
     }
     return s;
   }
-  if (/^[-\w]{25,}$/.test(s)) return vignetteDrive(s); // un identifiant nu
+  if (/^[-\w]{25,}$/.test(s)) return vignetteDrive(s, taille); // un identifiant nu
   return "photos/" + s;                                 // un fichier du dépôt
 }
 
@@ -420,7 +428,8 @@ function normaliseMembres(brut, cle, avertir) {
         prenom, nom, surnom,
         pronoms: String(m.pronoms ?? "").trim(),
         poles,
-        photo: urlPhoto(m.photo),
+        photo: urlPhoto(m.photo, TAILLE_CARTE),
+        photoGrande: urlPhoto(m.photo, TAILLE_FICHE),
         cadrage,
         note: String(m.note ?? "").trim(),
         /* Le nom affiché est le surnom, ou le prénom à défaut. C'est ce
