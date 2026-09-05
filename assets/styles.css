@@ -260,10 +260,23 @@ h1::after{
 .blink:hover{background:color-mix(in srgb, var(--c) 26%, var(--mixbase))}
 .blink svg{flex:0 0 auto}
 
+/* Le cadre prend la variante LISIBLE de la couleur, pas la couleur brute :
+   celle-ci pouvait egaler le fond. Quatre poles avaient un cadre invisible
+   en theme sombre, et Entrainements l'etait deja en clair. */
 .recruit{
-  border:1.5px dashed color-mix(in srgb, var(--c) 40%, transparent);border-radius:11px;
+  border:1.5px dashed color-mix(in srgb, var(--cl) 55%, transparent);border-radius:11px;
   display:grid;place-content:center;text-align:center;padding:.9rem .7rem;gap:.2rem;
   min-height:8rem;color:var(--cl, var(--ink));
+  /* Un battement lent, decale d'un pole a l'autre : douze encarts qui
+     clignoteraient a l'unisson feraient une page agitee, pas un appel.
+     Le creux reste visible (1,7:1 au pire), donc le cadre ne disparait
+     jamais -- l'animation ajoute de l'attention, elle n'en retire pas. */
+  animation:appel 3.6s ease-in-out infinite;
+  animation-delay:var(--retard, 0s);
+}
+@keyframes appel{
+  0%, 100% { border-color:color-mix(in srgb, var(--cl) 40%, transparent) }
+  50%      { border-color:var(--cl) }
 }
 .recruit b{font-size:.82rem;font-weight:750;display:block}
 .recruit span{font-size:.72rem;color:var(--ink-3);line-height:1.35;display:block}
