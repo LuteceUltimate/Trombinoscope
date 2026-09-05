@@ -106,7 +106,9 @@ h1{
   font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:1;
   font-size:clamp(2rem,6vw,3.25rem);margin:0;
 }
-.lede{color:var(--ink-2);margin:.6rem 0 0;font-size:1.02rem;max-width:40ch}
+/* Pas de max-width : la phrase tient sur une ligne sur grand écran, et
+   text-wrap:balance répartit proprement quand elle doit se couper. */
+.lede{color:var(--ink-2);margin:.6rem 0 0;font-size:1.02rem;text-wrap:balance}
 .page-foot{
   margin-top:3rem;padding:1.5rem 0 3rem;border-top:1px solid var(--line);
   color:var(--ink-3);font-size:.82rem;
