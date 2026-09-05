@@ -132,8 +132,19 @@ function correspond(m) {
 /* ---------- Rendu ---------- */
 const indexDe = new Map(); // carte -> membre, pour la vue agrandie
 
-function bandeauHTML(pole, membres) {
-  const n = membres.length;
+/* L'effectif d'un pôle est un fait sur le club : il ne doit pas rétrécir
+   parce qu'on a tapé trois lettres. Mais montrer 7 au-dessus de 2 cartes
+   serait faux aussi. On dit donc les deux, dans la forme que le compteur
+   du haut emploie déjà : « 2 sur 7 ». */
+function libelleEffectif(montres, total) {
+  if (montres === total) return total + " membre" + (total > 1 ? "s" : "");
+  return montres + " sur " + total + " membre" + (total > 1 ? "s" : "");
+}
+
+/** Effectif réel d'un pôle, filtres et recherche ignorés. */
+const effectifDe = (id) => DONNEES.membres.filter((m) => m.poles.includes(id)).length;
+
+function bandeauHTML(pole, membres, total) {
   const cartes = membres.map((m) => carteHTML(m, indexDe.get(m))).join("");
   const renfort = pole.recrute
     ? `<div class="recruit"><b>On cherche ${pole.manque > 1 ? pole.manque + " personnes" : "quelqu'un"}</b>` +
@@ -146,7 +157,7 @@ function bandeauHTML(pole, membres) {
   <div class="band-head">
     <div class="band-title">
       <h2>${esc(pole.nom)}</h2>
-      <span class="band-n">${n} membre${n > 1 ? "s" : ""}</span>
+      <span class="band-n">${libelleEffectif(membres.length, total)}</span>
     </div>
     ${pole.description ? `<p class="band-desc">${esc(pole.description)}</p>` : ""}
     ${lien}
@@ -155,13 +166,13 @@ function bandeauHTML(pole, membres) {
 </section>`;
 }
 
-function sansPoleHTML(membres) {
+function sansPoleHTML(membres, total) {
   const cartes = membres.map((m) => carteHTML(m, indexDe.get(m))).join("");
   return `<section class="pole-band" style="--c:var(--ink-3)">
   <div class="band-head" style="border-left-color:var(--line-2)">
     <div class="band-title">
       <h2 style="color:var(--ink-3)">Pas encore de pôle</h2>
-      <span class="band-n">${membres.length}</span>
+      <span class="band-n">${libelleEffectif(membres.length, total)}</span>
     </div>
     <p class="band-desc">Envie d'en rejoindre un ? Tout est ouvert, il suffit d'écrire dans le salon.</p>
   </div>
@@ -192,7 +203,7 @@ function rendre() {
       .filter((p) => !etat.filtres.size || etat.filtres.has(p.id))
       .map((p) => {
         const gens = trouves.filter((m) => m.poles.includes(p.id));
-        return gens.length || p.recrute ? bandeauHTML(p, gens) : "";
+        return gens.length || p.recrute ? bandeauHTML(p, gens, effectifDe(p.id)) : "";
       });
 
     const orphelins = trouves.filter((m) => !m.poles.length);
@@ -200,7 +211,7 @@ function rendre() {
       /* Un trait avant la dernière section : ces gens ne sont pas un
          treizième pôle, et la page doit le dire avant qu'on les lise. */
       if (bandeaux.some(Boolean)) bandeaux.push('<hr class="coupure">');
-      bandeaux.push(sansPoleHTML(orphelins));
+      bandeaux.push(sansPoleHTML(orphelins, DONNEES.membres.filter((m) => !m.poles.length).length));
     }
 
     el.resultats.innerHTML = `<div class="groupwrap">${bandeaux.join("")}</div>`;
