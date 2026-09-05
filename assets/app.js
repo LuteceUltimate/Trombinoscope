@@ -90,12 +90,21 @@ function avatarHTML(m, classe) {
   const principal = m.poles[0];
   const p = principal ? DONNEES.parId.get(principal) : null;
   const couleur = p ? p.couleur : null;
-  const style = p ? ` style="--c:${esc(p.couleur)};--cl:${esc(lisibleDe(p))}"` : "";
+  const cadre = `--cadre:${esc(m.cadrage)}`;
+  const style = p
+    ? ` style="--c:${esc(p.couleur)};--cl:${esc(lisibleDe(p))};${cadre}"`
+    : ` style="${cadre}"`;
   const img = m.photo
     ? `<img src="${esc(m.photo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
     : "";
   return `<div class="${classe}${couleur ? "" : " none"}"${style}><span>${esc(initiales(m))}</span>${img}</div>`;
 }
+
+/* La note sur la carte : une ligne, tronquée. Le texte entier vit dans la
+   vue agrandie — qui continue donc de ne rien montrer de nouveau, seulement
+   plus de la même chose. C'est ce qui garde le clic sans enjeu. */
+const noteCarteHTML = (m) =>
+  m.note ? `<span class="note" title="${esc(m.note)}">${esc(m.note)}</span>` : "";
 
 const pronomsHTML = (m) =>
   m.pronoms ? `<span class="pron">${esc(m.pronoms)}</span>` : "";
@@ -110,6 +119,7 @@ function carteHTML(m, i) {
         <span class="full">${esc(m.prenom)} ${esc(m.nom)}</span>
       </span>
     </span>
+    ${noteCarteHTML(m)}
     <span class="chips">${chipsHTML(m)}</span>
   </span>
 </button>`;
@@ -240,6 +250,7 @@ function ouvrirZoom(m) {
     ${m.pronoms ? `<span class="zoom-pron">${esc(m.pronoms)}</span>` : ""}
     <p class="zoom-full">${esc(m.prenom)} ${esc(m.nom)}</p>
     <div class="chips">${chipsHTML(m)}</div>
+    ${m.note ? `<p class="zoom-note">${esc(m.note)}</p>` : ""}
   </div>
 </div>`;
   el.zoomBody.querySelectorAll(".zoom-av img").forEach((img) => {

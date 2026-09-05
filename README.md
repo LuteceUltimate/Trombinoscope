@@ -87,6 +87,8 @@ c'est elle que citent les colonnes `Pôle 1` et `Pôle 2` de l'onglet Membres.
 | `Pronoms` | **facultatif et déclaratif** : rempli par la personne, jamais deviné. Vide → rien ne s'affiche. Forme retenue au club : `lui/il`, `elle/elle`, `ellui/iel` |
 | `Pôle 1`, `Pôle 2` | le `Nom` d'un pôle. Ajouter une colonne `Pôle 3` suffit à en gérer trois, sans toucher au code |
 | `Photo` | facultative. Lien Drive, URL d'image ou nom de fichier — voir **Les photos** plus bas. Vide → initiales |
+| `Cadrage` | facultative. Quelle partie de la photo garder : `haut`, `milieu-haut`, `milieu`, `milieu-bas`, `bas`. **`haut` = on garde le haut de l'image**, donc c'est la valeur pour un visage haut dans le cadre. Vide → `milieu-haut` |
+| `Note` | facultative. Une phrase courte, affichée tronquée sur la carte et en entier dans la vue agrandie |
 
 Retirer quelqu'un du club, c'est retirer sa ligne du tableur : il n'y a pas de
 colonne `Actif`.
@@ -106,6 +108,32 @@ teinté. Pour le **texte**, il en calcule une variante à teinte constante, dont
 seule la clarté est déplacée jusqu'à dépasser le seuil de contraste WCAG AA
 (4,5:1) — une fois pour le thème clair, une fois pour le sombre. Avec la palette
 actuelle, les douze pôles passent le seuil dans les deux thèmes.
+
+### Le cadrage des photos
+
+Une photo s'affiche dans un rond : il faut choisir quelle partie garder. Le
+défaut est **`milieu-haut`** et non `milieu`, parce que les photos viennent de
+téléphones, en portrait, où le visage se situe vers le tiers supérieur — un
+ancrage centré rogne le front. Et quand le défaut se trompe, il se trompe du bon
+côté : un peu d'air au-dessus de la tête plutôt qu'un menton coupé.
+
+Une valeur inconnue est signalée en console et retombe sur le défaut. Un
+pourcentage brut (`40%`) est accepté aussi, pour qui veut ajuster finement.
+
+### Les notes
+
+Une phrase courte par personne — « Coache les U17 mixtes ». Elle apparaît
+**tronquée à une ligne sur la carte** et en entier dans la vue agrandie.
+
+Ce n'est pas une biographie : c'est une précision opérationnelle qui répond à une
+question nommée. Le jour où on y lit « j'aime les pizzas », le champ a échoué.
+Elle apparaît sur la carte et pas seulement au clic, parce que « qui coache mon
+équipe » est une question qu'on se pose en balayant un pôle du regard, pas en
+ouvrant sept fiches une par une — et parce que la vue agrandie doit continuer de
+ne rien montrer que la carte ne montre déjà.
+
+Elle périmera : un coach change d'équipe, la note reste. C'est une ligne de
+tableur à corriger, comme le reste.
 
 ### Ce qui casse, et ce qui ne casse pas
 

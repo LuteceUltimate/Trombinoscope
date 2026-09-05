@@ -302,7 +302,7 @@ h1::after{
   color:var(--cl, var(--ink));
   box-shadow:inset 0 0 0 1.5px color-mix(in srgb, var(--c) 45%, transparent);
 }
-.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;object-position:50% var(--cadre,25%)}
 .avatar.none{background:var(--surface-3);color:var(--ink-3);box-shadow:inset 0 0 0 1.5px var(--line-2)}
 .who{min-width:0;display:flex;flex-direction:column;gap:.12rem}
 .nickrow{display:flex;align-items:baseline;gap:.32rem;flex-wrap:wrap}
@@ -323,6 +323,21 @@ h1::after{
   box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c) 30%, transparent);
 }
 .chip.empty{background:var(--surface-3);color:var(--ink-3);box-shadow:inset 0 0 0 1px var(--line-2);font-weight:600}
+
+/* ---------- Note libre ----------
+   Sur la carte : une ligne, tronquée. Le but est de pouvoir balayer un
+   bandeau du regard — « quelle équipe coache cette personne » est une
+   question qu'on se pose en parcourant un pôle, pas en ouvrant sept
+   fiches. Le texte entier est dans la vue agrandie. */
+.note{
+  font-size:.7rem;line-height:1.35;color:var(--ink-3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.zoom-note{
+  width:100%;margin:.9rem 0 0;padding-top:.85rem;
+  border-top:1px solid var(--line);
+  font-size:.88rem;line-height:1.5;color:var(--ink-2);text-wrap:pretty;
+}
 
 /* ---------- Vue agrandie ----------
    Mêmes champs que la carte, en plus grand. Aucune information nouvelle. */
@@ -347,7 +362,7 @@ h1::after{
   color:var(--cl, var(--ink));
   box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--c) 45%, transparent);
 }
-.zoom-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.zoom-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;object-position:50% var(--cadre,25%)}
 .zoom-av.none{background:var(--surface-3);color:var(--ink-3);box-shadow:inset 0 0 0 2px var(--line-2)}
 .zoom-name{
   font-family:var(--f-display);font-weight:800;font-size:1.8rem;line-height:1.05;letter-spacing:-.015em;margin:0;

@@ -50,6 +50,45 @@ const toBool = (v, defaut = true) => {
 };
 
 /* ============================================================
+   Cadrage des photos
+   ------------------------------------------------------------
+   Une photo est affichée dans un rond : il faut choisir quelle
+   partie garder. « haut » veut dire « garde le haut de l'image »,
+   donc c'est la valeur pour quelqu'un dont le visage est haut
+   dans le cadre.
+
+   Par défaut « milieu-haut » et non « milieu » : les photos
+   viennent de téléphones, en portrait, où le visage se situe vers
+   le tiers supérieur. Un ancrage centré rogne le front. Et si le
+   défaut se trompe, il se trompe du bon côté — un peu d'air
+   au-dessus de la tête plutôt qu'un menton coupé.
+   ============================================================ */
+
+const CADRAGES = {
+  "haut": "0%",
+  "milieu-haut": "25%",
+  "milieu": "50%",
+  "milieu-bas": "75%",
+  "bas": "100%",
+};
+export const CADRAGE_DEFAUT = "25%";
+
+/**
+ * Valeur de la colonne « Cadrage » -> ancrage vertical CSS.
+ * Vide -> le défaut. Valeur inconnue -> null, pour que l'appelant
+ * le signale au lieu de l'avaler en silence.
+ */
+export function positionPhoto(valeur) {
+  const s = norm(valeur).replace(/\s+/g, "-");
+  if (!s) return CADRAGE_DEFAUT;
+  if (CADRAGES[s]) return CADRAGES[s];
+  // On accepte aussi un pourcentage brut, pour qui veut ajuster finement.
+  const pc = s.match(/^(\d{1,3})%?$/);
+  if (pc) return Math.max(0, Math.min(100, Number(pc[1]))) + "%";
+  return null;
+}
+
+/* ============================================================
    Lisibilité des couleurs
    ------------------------------------------------------------
    La palette vient du tableur : n'importe qui peut y écrire un
@@ -276,6 +315,8 @@ function membresDepuisCSV(objets) {
     pronoms: col(o, "pronoms", "pronom"),
     poles:   colonnesPoles(o),
     photo:   col(o, "photo") || colContient(o, "photo"),
+    cadrage: col(o, "cadrage") || colContient(o, "cadrage"),
+    note:    col(o, "note", "notes") || colContient(o, "note"),
     actif:   col(o, "actif", "active", "membre actif"),
   }));
 }
@@ -367,12 +408,21 @@ function normaliseMembres(brut, cle, avertir) {
         if (!poles.includes(id)) poles.push(id);
       }
 
+      let cadrage = positionPhoto(m.cadrage);
+      if (cadrage === null) {
+        avertir(`membre « ${prenom} ${nom} » : cadrage « ${m.cadrage} » inconnu, ` +
+                `valeurs attendues : haut, milieu-haut, milieu, milieu-bas, bas`);
+        cadrage = CADRAGE_DEFAUT;
+      }
+
       const surnom = String(m.surnom ?? "").trim();
       return {
         prenom, nom, surnom,
         pronoms: String(m.pronoms ?? "").trim(),
         poles,
         photo: urlPhoto(m.photo),
+        cadrage,
+        note: String(m.note ?? "").trim(),
         /* Le nom affiché est le surnom, ou le prénom à défaut. C'est ce
            qu'on lit en gros sur la carte, donc c'est la clé de tri. */
         nomAffiche: surnom || prenom,
