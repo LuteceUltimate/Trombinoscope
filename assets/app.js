@@ -32,6 +32,12 @@ const SOMBRE = matchMedia("(prefers-color-scheme: dark)");
 const lisibleDe = (p) => (SOMBRE.matches ? p.txtSombre : p.txtClair);
 SOMBRE.addEventListener("change", () => { monterFiltres(); syncFiltres(); rendre(); });
 
+/* Valeur de filtre pour « sans pôle ». Ce n'est pas un identifiant de pôle :
+   aucun bandeau ne lui correspond, et elle se lit dans l'URL (?pole=aucun).
+   Un pôle qui s'appellerait « Aucun » entrerait en collision — improbable,
+   et le seul remède serait de le renommer. */
+const SANS_POLE = "aucun";
+
 /* ---------- État ---------- */
 const etat = { group: "pole", filtres: new Set(), q: "" };
 let DONNEES = { poles: [], membres: [], parId: new Map() };
@@ -113,7 +119,11 @@ function carteHTML(m, i) {
    Les pastilles filtrent en OU : chercher quelqu'un, ce n'est pas
    croiser deux critères. Le ET est une question de bureau, pas de membre. */
 function correspond(m) {
-  if (etat.filtres.size && !m.poles.some((id) => etat.filtres.has(id))) return false;
+  if (etat.filtres.size) {
+    /* Toujours en OU, « sans pôle » compris. */
+    const veutSansPole = etat.filtres.has(SANS_POLE) && m.poles.length === 0;
+    if (!veutSansPole && !m.poles.some((id) => etat.filtres.has(id))) return false;
+  }
   if (!etat.q) return true;
   const nomsPoles = m.poles.map((id) => DONNEES.parId.get(id).nom).join(" ");
   return norm(`${m.prenom} ${m.nom} ${m.surnom} ${nomsPoles}`).includes(norm(etat.q));
@@ -186,7 +196,12 @@ function rendre() {
       });
 
     const orphelins = trouves.filter((m) => !m.poles.length);
-    if (orphelins.length && !etat.filtres.size) bandeaux.push(sansPoleHTML(orphelins));
+    if (orphelins.length && (!etat.filtres.size || etat.filtres.has(SANS_POLE))) {
+      /* Un trait avant la dernière section : ces gens ne sont pas un
+         treizième pôle, et la page doit le dire avant qu'on les lise. */
+      if (bandeaux.some(Boolean)) bandeaux.push('<hr class="coupure">');
+      bandeaux.push(sansPoleHTML(orphelins));
+    }
 
     el.resultats.innerHTML = `<div class="groupwrap">${bandeaux.join("")}</div>`;
   }
@@ -276,12 +291,19 @@ function syncFiltres() {
 }
 
 function monterFiltres() {
-  el.filtres.innerHTML =
-    DONNEES.poles
-      .map((p) => `<button type="button" class="fchip" data-id="${esc(p.id)}" aria-pressed="false"
+  const poles = DONNEES.poles
+    .map((p) => `<button type="button" class="fchip" data-id="${esc(p.id)}" aria-pressed="false"
         style="--c:${esc(p.couleur)};--cl:${esc(lisibleDe(p))};--ct:${contraste(p.couleur)}">${esc(p.nom)}</button>`)
-      .join("") +
-    `<button type="button" class="fchip reset" data-reset>Tout afficher</button>`;
+    .join("");
+  /* « Sans pôle » se range après un séparateur et porte un contour tiret :
+     dans cette page, le tireté veut déjà dire « il manque quelque chose »
+     — c'est le trait de la carte « on cherche du monde ». Personne ne doit
+     le lire comme un treizième pôle. */
+  const sansPole =
+    `<span class="sep-filtres" aria-hidden="true"></span>` +
+    `<button type="button" class="fchip sans" data-id="${SANS_POLE}" aria-pressed="false">Sans pôle</button>`;
+  const reset = `<button type="button" class="fchip reset" data-reset>Tout afficher</button>`;
+  el.filtres.innerHTML = poles + sansPole + reset;
 }
 
 /* Noir ou blanc sur la couleur pleine, selon sa luminance perçue. */

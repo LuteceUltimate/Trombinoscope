@@ -208,6 +208,30 @@ h1::after{
 .fchip.reset{background:transparent;color:var(--ink-3);box-shadow:inset 0 0 0 1px var(--line-2)}
 .fchip.reset:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink-3)}
 
+/* ---------- « Sans pôle » n'est pas un pôle ----------
+   Deux marques pour le dire, toutes deux dans un vocabulaire que la
+   page utilise déjà : un trait de séparation, et le tireté — qui
+   signifie « il manque quelqu'un » sur la carte de renfort. */
+.sep-filtres{
+  flex:0 0 auto;align-self:stretch;width:1px;
+  background:var(--line-2);margin:.2rem .3rem;
+}
+.fchip.sans{
+  background:transparent;color:var(--ink-2);box-shadow:none;
+  border:1px dashed var(--line-2);
+  padding:calc(.4rem - 1px) calc(.7rem - 1px);
+}
+.fchip.sans:hover{background:var(--surface-3);color:var(--ink);border-color:var(--ink-3)}
+.fchip.sans[aria-pressed="true"]{
+  background:var(--ink-2);color:var(--ground);
+  border-style:solid;border-color:var(--ink-2);
+}
+/* Le trait avant la dernière section, en mode « Par pôle ». */
+.coupure{
+  border:0;border-top:1px solid var(--line-2);
+  margin:1rem 0 .25rem;width:100%;
+}
+
 /* ---------- États ---------- */
 .state{
   color:var(--ink-3);font-size:.9rem;text-align:center;padding:3rem 1rem;margin:0;
