@@ -300,10 +300,20 @@ document.querySelectorAll(".seg button").forEach((b) => {
   });
 });
 
-let minuteur;
+let minuteur, minuteurRendu;
+/* On ne reconstruit pas la liste à chaque frappe. Le calcul, lui, est
+   négligeable — 2 ms pour quatre-vingts cartes — mais chaque reconstruction
+   détruit et recrée toutes les balises <img>, que le navigateur doit
+   redécoder. Avec soixante photos, c'est ce qui saccaderait.
+
+   Report et non cadence fixe : le rendu est repoussé tant qu'on tape, et
+   part 120 ms après la dernière frappe. Une rafale rapide ne produit donc
+   qu'un seul rendu. Le champ, lui, affiche la saisie immédiatement — c'est
+   le navigateur qui s'en charge, la frappe n'est jamais ralentie. */
 el.recherche.addEventListener("input", () => {
   etat.q = el.recherche.value;
-  rendre();
+  clearTimeout(minuteurRendu);
+  minuteurRendu = setTimeout(rendre, 120);
   clearTimeout(minuteur);
   minuteur = setTimeout(ecrireURL, 400); // on n'écrit pas l'URL à chaque frappe
 });
