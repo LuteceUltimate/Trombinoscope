@@ -157,7 +157,7 @@ const effectifDe = (id) => DONNEES.membres.filter((m) => m.poles.includes(id)).l
 function bandeauHTML(pole, membres, total) {
   const cartes = membres.map((m) => carteHTML(m, indexDe.get(m))).join("");
   const renfort = pole.recrute
-    ? `<div class="recruit" style="--retard:${(DONNEES.poles.findIndex((p) => p.id === pole.id) % 5) * 0.5}s">` +
+    ? `<div class="recruit" style="--retard:${(DONNEES.poles.findIndex((p) => p.id === pole.id) % 6) * 0.32}s">` +
       `<b>On cherche ${pole.manque > 1 ? pole.manque + " personnes" : "quelqu'un"}</b>` +
       `<span>${pole.discord ? "Écrivez dans le salon du pôle" : "Parlez-en à quelqu'un du pôle"}</span></div>`
     : "";
