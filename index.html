@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trombinoscope — Lutèce Ultimate</title>
+
+<!-- Page interne, volontairement non référencée. Voir robots.txt. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Les pôles du club et les personnes qui les font vivre.">
+<meta name="theme-color" content="#22533E" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D1F17" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/public-sans-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<a class="skip" href="#resultats">Aller à la liste</a>
+
+<header class="page-head">
+  <div class="wrap">
+    <h1>Trombinoscope</h1>
+    <p class="lede">Les douze pôles du club, et les personnes qui les font vivre.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="controls" aria-label="Affichage et filtres">
+    <div class="ctl-row">
+      <div class="seg" role="group" aria-label="Regroupement">
+        <button type="button" data-group="pole" aria-pressed="true">Par pôle</button>
+        <button type="button" data-group="alpha" aria-pressed="false">Alphabétique</button>
+      </div>
+      <input class="search" type="search" id="q" autocomplete="off"
+             placeholder="Nom, surnom, pôle…" aria-label="Rechercher une personne">
+      <p class="count" id="count" aria-live="polite"></p>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filtrer par pôle"></div>
+  </section>
+
+  <div id="resultats" tabindex="-1">
+    <p class="state" id="state">Chargement…</p>
+  </div>
+
+  <noscript>
+    <p class="state">Cette page a besoin de JavaScript pour afficher la liste.</p>
+  </noscript>
+
+</main>
+
+<footer class="page-foot">
+  <div class="wrap">
+    <p>Dernière mise à jour : <time id="maj">—</time>.</p>
+    <p>Une erreur, un pôle qui manque, une photo à changer ? Écrivez dans le salon du pôle concerné.</p>
+  </div>
+</footer>
+
+<dialog id="zoom" class="zoom" aria-label="Fiche membre"><div id="zoom-body"></div></dialog>
+
+<script type="module" src="assets/app.js"></script>
+</body>
+</html>

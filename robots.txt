@@ -1,0 +1,8 @@
+# Page interne du club. Le référencement est bloqué par la balise
+# <meta name="robots" content="noindex"> présente dans index.html.
+#
+# On n'écrit PAS "Disallow: /" ici : cela empêcherait les moteurs de lire
+# cette balise, et l'URL pourrait alors rester listée sans son contenu.
+# C'est la balise qui fait le travail, pas ce fichier.
+User-agent: *
+Allow: /

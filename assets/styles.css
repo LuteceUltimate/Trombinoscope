@@ -1,0 +1,288 @@
+/* ============================================================
+   Trombinoscope — Lutèce Ultimate
+   Un seul fichier de style. Aucune dépendance externe.
+   ============================================================ */
+
+/* ---------- Polices auto-hébergées (SIL OFL) ---------- */
+@font-face{
+  font-family:"Archivo";
+  src:url("fonts/archivo-var.woff2") format("woff2");
+  font-weight:400 900;
+  font-stretch:62% 125%;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Public Sans";
+  src:url("fonts/public-sans-var.woff2") format("woff2");
+  font-weight:400 800;
+  font-display:swap;
+}
+
+/* ---------- Jetons : clair par défaut ---------- */
+:root{
+  --ground:#F0F3EE;
+  --surface:#FFFFFF;
+  --surface-2:#E6EBE4;
+  --surface-3:#DBE2D8;
+  --ink:#12271C;
+  --ink-2:#4B5F53;
+  --ink-3:#6E8377;
+  --line:rgba(18,39,28,.13);
+  --line-2:rgba(18,39,28,.24);
+  --pine:#22533E;
+  --shadow:0 1px 2px rgba(18,39,28,.06), 0 8px 24px -12px rgba(18,39,28,.18);
+  /* base des mélanges de couleur : doit suivre le thème */
+  --mixbase:#FFFFFF;
+
+  --f-display:"Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-ui:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --wrap:66rem;
+}
+
+/* ---------- Sombre : préférence système ---------- */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1F17;
+    --surface:#142E22;
+    --surface-2:#1B3A2B;
+    --surface-3:#234835;
+    --ink:#E7F1E9;
+    --ink-2:#A2B8AA;
+    --ink-3:#83A08D;
+    --line:rgba(231,241,233,.14);
+    --line-2:rgba(231,241,233,.26);
+    --pine:#4E9E77;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+    --mixbase:#0D1F17;
+  }
+}
+/* ---------- Sombre : choix explicite (réservé, pas de bouton en V1) ---------- */
+:root[data-theme="dark"]{
+  --ground:#0D1F17;
+  --surface:#142E22;
+  --surface-2:#1B3A2B;
+  --surface-3:#234835;
+  --ink:#E7F1E9;
+  --ink-2:#A2B8AA;
+  --ink-3:#83A08D;
+  --line:rgba(231,241,233,.14);
+  --line-2:rgba(231,241,233,.26);
+  --pine:#4E9E77;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  --mixbase:#0D1F17;
+}
+
+/* ---------- Base ---------- */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--f-ui);
+  font-size:1rem;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--pine);outline-offset:3px;border-radius:4px}
+#resultats:focus{outline:none}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+.wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:clamp(1rem,4vw,2rem)}
+
+.skip{
+  position:absolute;left:-9999px;top:0;z-index:10;
+  background:var(--pine);color:#fff;padding:.6rem 1rem;border-radius:0 0 8px 0;font-weight:700;
+}
+.skip:focus{left:0}
+
+/* ---------- En-tête et pied ---------- */
+.page-head{padding:clamp(1.75rem,5vw,3rem) 0 clamp(1rem,3vw,1.5rem)}
+h1{
+  font-family:var(--f-display);font-variation-settings:"wdth" 115;
+  font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:1;
+  font-size:clamp(2rem,6vw,3.25rem);margin:0;
+}
+.lede{color:var(--ink-2);margin:.6rem 0 0;font-size:1.02rem;max-width:40ch}
+.page-foot{
+  margin-top:3rem;padding:1.5rem 0 3rem;border-top:1px solid var(--line);
+  color:var(--ink-3);font-size:.82rem;
+}
+.page-foot p{margin:0 0 .3rem}
+
+/* ---------- Barre de contrôles ---------- */
+.controls{
+  position:sticky;top:0;z-index:5;
+  background:color-mix(in srgb, var(--ground) 92%, transparent);
+  backdrop-filter:blur(8px);
+  padding:.75rem 0 .8rem;margin-bottom:1.25rem;
+  border-bottom:1px solid var(--line);
+}
+.ctl-row{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.7rem}
+.seg{display:inline-flex;background:var(--surface-3);border-radius:9px;padding:3px;gap:2px;flex:0 0 auto}
+.seg button{
+  font-family:inherit;font-size:.82rem;font-weight:650;color:var(--ink-2);
+  background:transparent;border:0;border-radius:6px;padding:.45rem .75rem;cursor:pointer;
+  transition:background .14s ease,color .14s ease;
+}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.seg button:hover:not([aria-pressed="true"]){color:var(--ink)}
+.search{
+  flex:1 1 10rem;min-width:0;font-family:inherit;font-size:.9rem;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line-2);border-radius:9px;padding:.55rem .75rem;
+}
+.search::placeholder{color:var(--ink-3)}
+.count{
+  flex:0 0 auto;margin:0;font-size:.8rem;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;font-weight:600;
+}
+
+/* Les pastilles défilent horizontalement plutôt que d'empiler des rangées. */
+.filters{
+  display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.2rem;
+  scrollbar-width:thin;-webkit-overflow-scrolling:touch;
+}
+@media (min-width:900px){.filters{flex-wrap:wrap;overflow:visible}}
+.fchip{
+  flex:0 0 auto;font-family:inherit;font-size:.74rem;font-weight:700;cursor:pointer;
+  border:0;border-radius:99px;padding:.4rem .7rem;white-space:nowrap;
+  background:color-mix(in srgb, var(--c) 14%, var(--mixbase));
+  color:color-mix(in srgb, var(--c) 72%, var(--ink));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c) 32%, transparent);
+  transition:background .14s ease,color .14s ease;
+}
+.fchip:hover{background:color-mix(in srgb, var(--c) 26%, var(--mixbase))}
+.fchip[aria-pressed="true"]{background:var(--c);color:var(--ct);box-shadow:inset 0 0 0 1px var(--c)}
+.fchip.reset{background:transparent;color:var(--ink-3);box-shadow:inset 0 0 0 1px var(--line-2)}
+.fchip.reset:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink-3)}
+
+/* ---------- États ---------- */
+.state{
+  color:var(--ink-3);font-size:.9rem;text-align:center;padding:3rem 1rem;margin:0;
+}
+.state.error{color:#C9603F}
+
+/* ---------- Grille et bandeaux de pôle ---------- */
+.grid{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fill,minmax(9.5rem,1fr))}
+.groupwrap{display:grid;gap:2rem}
+.pole-band{display:grid;gap:.85rem}
+.band-head{border-left:4px solid var(--c);padding-left:.9rem;display:grid;gap:.3rem}
+.band-title{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.band-title h2{
+  margin:0;font-family:var(--f-display);font-variation-settings:"wdth" 112;
+  font-weight:800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.005em;
+  color:color-mix(in srgb, var(--c) 62%, var(--ink));
+}
+.band-n{font-size:.72rem;font-weight:700;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.band-desc{font-size:.85rem;line-height:1.45;color:var(--ink-2);margin:0;max-width:52ch}
+.blink{
+  justify-self:start;margin-top:.15rem;
+  font-size:.74rem;font-weight:700;text-decoration:none;padding:.32rem .6rem;border-radius:6px;
+  background:color-mix(in srgb, var(--c) 15%, var(--mixbase));
+  color:color-mix(in srgb, var(--c) 72%, var(--ink));
+  display:inline-flex;align-items:center;gap:.35rem;
+}
+.blink:hover{background:color-mix(in srgb, var(--c) 26%, var(--mixbase))}
+.blink svg{flex:0 0 auto}
+
+.recruit{
+  border:1.5px dashed color-mix(in srgb, var(--c) 40%, transparent);border-radius:11px;
+  display:grid;place-content:center;text-align:center;padding:.9rem .7rem;gap:.2rem;
+  min-height:8rem;color:color-mix(in srgb, var(--c) 65%, var(--ink));
+}
+.recruit b{font-size:.82rem;font-weight:750;display:block}
+.recruit span{font-size:.72rem;color:var(--ink-3);line-height:1.35;display:block}
+
+/* ---------- La carte ---------- */
+.card{
+  position:relative;background:var(--surface);border:1px solid var(--line);
+  border-radius:11px;overflow:hidden;text-align:left;font-family:inherit;color:inherit;
+  display:flex;flex-direction:column;width:100%;padding:0;cursor:pointer;
+  transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--line-2)}
+.rail{display:flex;height:4px;flex:0 0 auto}
+.rail i{flex:1;display:block}
+.card-body{padding:.85rem .8rem .9rem;display:flex;flex-direction:column;gap:.55rem;flex:1}
+.head{display:flex;gap:.6rem;align-items:center;min-width:0}
+.avatar{
+  position:relative;
+  width:3.1rem;height:3.1rem;border-radius:50%;flex:0 0 auto;
+  display:grid;place-items:center;overflow:hidden;
+  font-family:var(--f-display);font-weight:800;font-size:.95rem;
+  background:color-mix(in srgb, var(--c) 20%, var(--mixbase));
+  color:color-mix(in srgb, var(--c) 74%, var(--ink));
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb, var(--c) 45%, transparent);
+}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.avatar.none{background:var(--surface-3);color:var(--ink-3);box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.who{min-width:0;display:flex;flex-direction:column;gap:.12rem}
+.nickrow{display:flex;align-items:baseline;gap:.32rem;flex-wrap:wrap}
+.nick{
+  font-family:var(--f-display);font-variation-settings:"wdth" 104;
+  font-weight:800;font-size:1.02rem;line-height:1.1;letter-spacing:-.01em;
+}
+.pron{
+  font-size:.66rem;font-weight:650;line-height:1;color:var(--ink-3);
+  padding:.17rem .32rem;border-radius:4px;background:var(--surface-3);white-space:nowrap;
+}
+.full{font-size:.75rem;color:var(--ink-3);line-height:1.25;overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:.28rem;margin-top:auto}
+.chip{
+  font-size:.665rem;font-weight:700;letter-spacing:.02em;line-height:1;
+  padding:.3rem .45rem;border-radius:5px;
+  background:color-mix(in srgb, var(--c) 16%, var(--mixbase));
+  color:color-mix(in srgb, var(--c) 70%, var(--ink));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c) 30%, transparent);
+}
+.chip.empty{background:var(--surface-3);color:var(--ink-3);box-shadow:inset 0 0 0 1px var(--line-2);font-weight:600}
+
+/* ---------- Vue agrandie ----------
+   Mêmes champs que la carte, en plus grand. Aucune information nouvelle. */
+.zoom{
+  border:0;padding:0;background:transparent;color:var(--ink);
+  width:min(22rem,92vw);max-width:none;
+}
+.zoom::backdrop{background:rgba(8,23,15,.7)}
+.zoom-card{
+  position:relative;background:var(--surface);border-radius:16px;overflow:hidden;
+  box-shadow:0 30px 70px -25px rgba(0,0,0,.6);animation:pop .18s ease-out;
+}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.zoom .rail{height:6px}
+.zoom-in{padding:1.6rem 1.3rem 1.7rem;display:grid;justify-items:center;gap:.45rem;text-align:center}
+.zoom-av{
+  position:relative;
+  width:min(11rem,50vw);aspect-ratio:1;border-radius:50%;margin-bottom:.5rem;
+  display:grid;place-items:center;overflow:hidden;
+  font-family:var(--f-display);font-weight:800;font-size:clamp(2rem,11vw,3rem);
+  background:color-mix(in srgb, var(--c) 20%, var(--mixbase));
+  color:color-mix(in srgb, var(--c) 74%, var(--ink));
+  box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--c) 45%, transparent);
+}
+.zoom-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.zoom-av.none{background:var(--surface-3);color:var(--ink-3);box-shadow:inset 0 0 0 2px var(--line-2)}
+.zoom-name{
+  font-family:var(--f-display);font-variation-settings:"wdth" 108;
+  font-weight:800;font-size:1.8rem;line-height:1.05;letter-spacing:-.015em;margin:0;
+}
+.zoom-pron{font-size:.8rem;font-weight:650;color:var(--ink-3)}
+.zoom-full{font-size:.95rem;color:var(--ink-2);margin:0}
+.zoom .chips{justify-content:center;margin-top:.7rem}
+.zoom-close{
+  position:absolute;top:.75rem;right:.75rem;width:2rem;height:2rem;border:0;cursor:pointer;
+  border-radius:50%;background:var(--surface-3);color:var(--ink-2);
+  font-family:inherit;font-size:1rem;line-height:1;display:grid;place-items:center;
+}
+.zoom-close:hover{background:var(--line-2);color:var(--ink)}
+
+/* ---------- Impression : la liste, rien d'autre ---------- */
+@media print{
+  .controls,.page-foot,.skip,.zoom{display:none!important}
+  body{background:#fff;color:#000}
+  .card{break-inside:avoid;border-color:#bbb}
+  .grid{grid-template-columns:repeat(4,1fr)}
+}
