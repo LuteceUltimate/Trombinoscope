@@ -114,6 +114,7 @@ h1{
   color:var(--ink-3);font-size:.82rem;
 }
 .page-foot p{margin:0 0 .3rem}
+.alerte{color:#C9603F;font-weight:650}
 
 /* ---------- Barre de contrôles ---------- */
 .controls{

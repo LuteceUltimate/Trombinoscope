@@ -12,6 +12,7 @@ const el = {
   compte: $("#count"),
   recherche: $("#q"),
   maj: $("#maj"),
+  origine: $("#origine"),
   zoom: $("#zoom"),
   zoomBody: $("#zoom-body"),
 };
@@ -302,6 +303,15 @@ function contraste(hex) {
     el.maj.dateTime = DONNEES.maj.toISOString().slice(0, 10);
     el.maj.textContent = DONNEES.maj.toLocaleDateString("fr-FR",
       { day: "numeric", month: "long", year: "numeric" });
+  }
+
+  /* Une page datee est une page qu'on croit. Et si le tableur n'a pas
+     repondu, il faut le dire : afficher une vieille copie sans prevenir
+     est pire que ne rien afficher. */
+  if (DONNEES.origine !== "tableur" && el.origine) {
+    el.origine.hidden = false;
+    el.origine.textContent =
+      "Le tableur n’a pas répondu : cette liste est la dernière copie connue, elle peut être en retard.";
   }
 
   monterFiltres();
