@@ -45,13 +45,13 @@
   /* Les deux couleurs de la charte, mesurees dans le logo. Elles ne
      changent jamais avec le theme : ce sont des valeurs de marque.
      REGLE : le Mais est une SURFACE, jamais une encre. Sur blanc il
-     donne 1,2:1 -- illisible. Sur le Vert Brunswick, 8,7:1 dans les
+     donne 1,2:1 -- illisible. Sur le Vert Brunswick, 7,7:1 dans les
      deux sens : jaune sur vert, vert sur jaune, et rien d'autre. */
-  --brunswick:#084C37;
-  --mais:#FFF35A;
+  --brunswick:#00543C;
+  --mais:#FFF129;
   /* Couleur des anneaux de focus et du lien d'evitement : elle doit
      ressortir sur le fond, donc elle suit le theme. */
-  --accent:#084C37;
+  --accent:#00543C;
   --shadow:0 1px 2px rgba(18,39,28,.06), 0 8px 24px -12px rgba(18,39,28,.18);
   /* base des mélanges de couleur : doit suivre le thème */
   --mixbase:#FFFFFF;
@@ -67,34 +67,34 @@
 /* ---------- Sombre : préférence système ---------- */
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --ground:#042A1E;
-    --surface:#0A3A2A;
-    --surface-2:#104631;
-    --surface-3:#17533C;
+    --ground:#002E21;
+    --surface:#003F2D;
+    --surface-2:#004D37;
+    --surface-3:#005B41;
     --ink:#E7F1E9;
     --ink-2:#A2B8AA;
     --ink-3:#83A08D;
     --line:rgba(231,241,233,.14);
     --line-2:rgba(231,241,233,.26);
-    --accent:#FFF35A;
+    --accent:#FFF129;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
-    --mixbase:#042A1E;
+    --mixbase:#002E21;
   }
 }
 /* ---------- Sombre : choix explicite (réservé, pas de bouton en V1) ---------- */
 :root[data-theme="dark"]{
-  --ground:#042A1E;
-  --surface:#0A3A2A;
-  --surface-2:#104631;
-  --surface-3:#17533C;
+  --ground:#002E21;
+  --surface:#003F2D;
+  --surface-2:#004D37;
+  --surface-3:#005B41;
   --ink:#E7F1E9;
   --ink-2:#A2B8AA;
   --ink-3:#83A08D;
   --line:rgba(231,241,233,.14);
   --line-2:rgba(231,241,233,.26);
-  --accent:#FFF35A;
+  --accent:#FFF129;
   --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
-  --mixbase:#042A1E;
+  --mixbase:#002E21;
 }
 
 /* ---------- Base ---------- */
@@ -177,7 +177,7 @@ h1::after{
   background:transparent;border:0;border-radius:6px;padding:.45rem .75rem;cursor:pointer;
   transition:background .14s ease,color .14s ease;
 }
-.seg button[aria-pressed="true"]{background:var(--mais);color:#084C37;box-shadow:var(--shadow)}
+.seg button[aria-pressed="true"]{background:var(--mais);color:#00543C;box-shadow:var(--shadow)}
 .seg button:hover:not([aria-pressed="true"]){color:var(--ink)}
 .search{
   flex:1 1 10rem;min-width:0;font-family:inherit;font-size:.9rem;color:var(--ink);

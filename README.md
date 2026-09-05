@@ -183,19 +183,24 @@ ne changera.
 
 ## Charte graphique
 
-Deux couleurs, celles du logo : **Maïs `#FFF35A`** et **Vert Brunswick
-`#084C37`**. Elles sont écrites en dur dans `assets/styles.css` — ce sont des
+Deux couleurs, celles du logo : **Maïs `#FFF129`** et **Vert Brunswick
+`#00543C`**. Elles sont relevées dans `assets/logo.png`, un export vectoriel
+qui ne compte que dix-sept couleurs : c'est la source qui fait foi, devant le
+PDF de charte et devant toute copie recompressée, qui décalent l'une et
+l'autre.
+
+Elles sont écrites en dur dans `assets/styles.css` — ce sont des
 valeurs de marque, pas des données : elles ne changent pas avec la saison,
 contrairement aux couleurs des pôles qui, elles, vivent dans le tableur.
 
 **La règle à ne pas casser : le Maïs est une surface, jamais une encre.** Sur
-blanc il donne un contraste de 1,2:1 — illisible. Sur le Vert Brunswick, 8,7:1
+blanc il donne un contraste de 1,2:1 — illisible. Sur le Vert Brunswick, 7,7:1
 dans les deux sens. D'où l'usage qu'en fait la charte, et que la page reprend :
 jaune sur vert, vert sur jaune, et rien d'autre. Le bandeau de titre est le seul
 endroit où la couleur de marque occupe une surface ; partout ailleurs ce sont
 les douze couleurs des pôles qui parlent.
 
-Le thème sombre dérive son fond du Vert Brunswick (`#042A1E`) et prend le Maïs
+Le thème sombre dérive son fond du Vert Brunswick (`#002E21`) et prend le Maïs
 comme accent : c'est littéralement l'arrangement du logo.
 
 **La police est Urbanist**, pas Century Gothic. Century Gothic appartient à
@@ -212,9 +217,8 @@ italique, souligné d'un filet court**. Les bandeaux de pôle gardent leur filet
 vertical coloré — y ajouter du Maïs ferait se disputer deux couleurs sur le
 même objet.
 
-**L'écusson** est fourni sur un fond blanc carré ; la page le détoure en disque,
-ce qui lui laisse un mince liseré blanc. C'est assumé — un écusson se porte
-comme un patch. Un PNG détouré permettrait de s'en passer.
+**L’écusson** vient du PNG officiel, déjà transparent : la page le recadre au
+ras du disque et le réduit à 200 px. Rien à masquer, rien à retoucher.
 
 ## Prochaine étape
 

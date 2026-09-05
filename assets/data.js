@@ -63,7 +63,7 @@ const toBool = (v, defaut = true) => {
    ============================================================ */
 
 const FOND_CLAIR = [240, 243, 238];  // --ground, thème clair
-const FOND_SOMBRE = [4, 42, 30];     // --ground sombre, dérivé du Vert Brunswick
+const FOND_SOMBRE = [0, 46, 33];     // --ground sombre, dérivé du Vert Brunswick
 const CIBLE = 4.5;                   // WCAG AA, texte normal
 
 const hex2rgb = (h) => {
