@@ -12,6 +12,7 @@ const el = {
   compte: $("#count"),
   recherche: $("#q"),
   maj: $("#maj"),
+  origine: $("#origine"),
   zoom: $("#zoom"),
   zoomBody: $("#zoom-body"),
 };
@@ -23,6 +24,14 @@ const ICONE_DISCORD =
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/* ---------- Thème ----------
+   La couleur brute sert aux aplats ; pour le texte on prend la variante
+   lisible calculée pour le thème courant. On la choisit en JS plutôt qu'en
+   CSS : deux variables par pôle et une bascule, ça se lit. */
+const SOMBRE = matchMedia("(prefers-color-scheme: dark)");
+const lisibleDe = (p) => (SOMBRE.matches ? p.txtSombre : p.txtClair);
+SOMBRE.addEventListener("change", () => { monterFiltres(); syncFiltres(); rendre(); });
 
 /* ---------- État ---------- */
 const etat = { group: "pole", filtres: new Set(), q: "" };
@@ -63,7 +72,7 @@ const chipsHTML = (m) =>
     ? m.poles
         .map((id) => {
           const p = DONNEES.parId.get(id);
-          return `<span class="chip" style="--c:${esc(p.couleur)}">${esc(p.nom)}</span>`;
+          return `<span class="chip" style="--c:${esc(p.couleur)};--cl:${esc(lisibleDe(p))}">${esc(p.nom)}</span>`;
         })
         .join("")
     : `<span class="chip empty">Pas encore de pôle</span>`;
@@ -74,8 +83,9 @@ const initiales = (m) => (m.prenom[0] + (m.nom[0] || "")).toUpperCase();
    et les initiales sont déjà là. Aucun trou possible dans la grille. */
 function avatarHTML(m, classe) {
   const principal = m.poles[0];
-  const couleur = principal ? DONNEES.parId.get(principal).couleur : null;
-  const style = couleur ? ` style="--c:${esc(couleur)}"` : "";
+  const p = principal ? DONNEES.parId.get(principal) : null;
+  const couleur = p ? p.couleur : null;
+  const style = p ? ` style="--c:${esc(p.couleur)};--cl:${esc(lisibleDe(p))}"` : "";
   const img = m.photo
     ? `<img src="photos/${esc(m.photo)}" alt="" loading="lazy" decoding="async">`
     : "";
@@ -117,12 +127,13 @@ function bandeauHTML(pole, membres) {
   const n = membres.length;
   const cartes = membres.map((m) => carteHTML(m, indexDe.get(m))).join("");
   const renfort = pole.recrute
-    ? `<div class="recruit"><b>On cherche du monde</b><span>Écrivez dans le salon du pôle</span></div>`
+    ? `<div class="recruit"><b>On cherche ${pole.manque > 1 ? pole.manque + " personnes" : "quelqu'un"}</b>` +
+      `<span>${pole.discord ? "Écrivez dans le salon du pôle" : "Parlez-en à quelqu'un du pôle"}</span></div>`
     : "";
   const lien = pole.discord
     ? `<a class="blink" href="${esc(pole.discord)}" rel="noopener">${ICONE_DISCORD} Salon Discord</a>`
     : "";
-  return `<section class="pole-band" style="--c:${esc(pole.couleur)}">
+  return `<section class="pole-band" style="--c:${esc(pole.couleur)};--cl:${esc(lisibleDe(pole))}">
   <div class="band-head">
     <div class="band-title">
       <h2>${esc(pole.nom)}</h2>
@@ -269,7 +280,7 @@ function monterFiltres() {
   el.filtres.innerHTML =
     DONNEES.poles
       .map((p) => `<button type="button" class="fchip" data-id="${esc(p.id)}" aria-pressed="false"
-        style="--c:${esc(p.couleur)};--ct:${contraste(p.couleur)}">${esc(p.nom)}</button>`)
+        style="--c:${esc(p.couleur)};--cl:${esc(lisibleDe(p))};--ct:${contraste(p.couleur)}">${esc(p.nom)}</button>`)
       .join("") +
     `<button type="button" class="fchip reset" data-reset>Tout afficher</button>`;
 }
@@ -302,6 +313,15 @@ function contraste(hex) {
     el.maj.dateTime = DONNEES.maj.toISOString().slice(0, 10);
     el.maj.textContent = DONNEES.maj.toLocaleDateString("fr-FR",
       { day: "numeric", month: "long", year: "numeric" });
+  }
+
+  /* Une page datee est une page qu'on croit. Et si le tableur n'a pas
+     repondu, il faut le dire : afficher une vieille copie sans prevenir
+     est pire que ne rien afficher. */
+  if (DONNEES.origine !== "tableur" && el.origine) {
+    el.origine.hidden = false;
+    el.origine.textContent =
+      "Le tableur n’a pas répondu : cette liste est la dernière copie connue, elle peut être en retard.";
   }
 
   monterFiltres();
