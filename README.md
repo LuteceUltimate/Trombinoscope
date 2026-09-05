@@ -56,7 +56,7 @@ Pour l'instant, en éditant les deux fichiers de `data/`.
 | `prenom` | obligatoire ; sans lui la ligne est ignorée |
 | `nom` | |
 | `surnom` | affiché en gros. À défaut, c'est le prénom |
-| `pronoms` | **facultatif et déclaratif** : rempli par la personne, jamais deviné. Vide → rien ne s'affiche |
+| `pronoms` | **facultatif et déclaratif** : rempli par la personne, jamais deviné. Vide → rien ne s'affiche. Forme retenue au club : `lui/il`, `elle/elle`, `ellui/iel` |
 | `poles` | liste d'`id`. Accepte `["a","b"]` ou `"a ; b"` |
 | `photo` | nom de fichier dans `photos/`. Vide → initiales |
 | `actif` | `false` conserve la ligne sans l'afficher, plutôt que de la supprimer |
