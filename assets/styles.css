@@ -3,18 +3,24 @@
    Un seul fichier de style. Aucune dépendance externe.
    ============================================================ */
 
-/* ---------- Polices auto-hébergées (SIL OFL) ---------- */
+/* ---------- Police auto-hébergée (SIL OFL) ----------
+   La charte du club demande Century Gothic, sous licence Monotype :
+   impossible de la livrer ici. Urbanist est la géométrique libre la
+   plus proche de son allure — grande hauteur d'x, panses larges et
+   rondes, ce qui distingue justement Century Gothic de Futura.
+   Une seule famille pour toute la page, comme dans la charte. */
 @font-face{
-  font-family:"Archivo";
-  src:url("fonts/archivo-var.woff2") format("woff2");
+  font-family:"Urbanist";
+  src:url("fonts/urbanist-var.woff2") format("woff2");
   font-weight:400 900;
-  font-stretch:62% 125%;
+  font-style:normal;
   font-display:swap;
 }
 @font-face{
-  font-family:"Public Sans";
-  src:url("fonts/public-sans-var.woff2") format("woff2");
-  font-weight:400 800;
+  font-family:"Urbanist";
+  src:url("fonts/urbanist-italic.woff2") format("woff2");
+  font-weight:400 900;
+  font-style:italic;
   font-display:swap;
 }
 
@@ -36,13 +42,24 @@
   --ink-3:#6E8377;
   --line:rgba(18,39,28,.13);
   --line-2:rgba(18,39,28,.24);
-  --pine:#22533E;
+  /* Les deux couleurs de la charte, mesurees dans le logo. Elles ne
+     changent jamais avec le theme : ce sont des valeurs de marque.
+     REGLE : le Mais est une SURFACE, jamais une encre. Sur blanc il
+     donne 1,2:1 -- illisible. Sur le Vert Brunswick, 8,7:1 dans les
+     deux sens : jaune sur vert, vert sur jaune, et rien d'autre. */
+  --brunswick:#084C37;
+  --mais:#FFF35A;
+  /* Couleur des anneaux de focus et du lien d'evitement : elle doit
+     ressortir sur le fond, donc elle suit le theme. */
+  --accent:#084C37;
   --shadow:0 1px 2px rgba(18,39,28,.06), 0 8px 24px -12px rgba(18,39,28,.18);
   /* base des mélanges de couleur : doit suivre le thème */
   --mixbase:#FFFFFF;
 
-  --f-display:"Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-ui:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Une seule famille, deux rôles : les titres l'utilisent en gras
+     italique capitales, le reste en régulier. */
+  --f-display:"Urbanist", "Century Gothic", system-ui, sans-serif;
+  --f-ui:"Urbanist", "Century Gothic", system-ui, sans-serif;
 
   --wrap:66rem;
 }
@@ -50,34 +67,34 @@
 /* ---------- Sombre : préférence système ---------- */
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --ground:#0D1F17;
-    --surface:#142E22;
-    --surface-2:#1B3A2B;
-    --surface-3:#234835;
+    --ground:#042A1E;
+    --surface:#0A3A2A;
+    --surface-2:#104631;
+    --surface-3:#17533C;
     --ink:#E7F1E9;
     --ink-2:#A2B8AA;
     --ink-3:#83A08D;
     --line:rgba(231,241,233,.14);
     --line-2:rgba(231,241,233,.26);
-    --pine:#4E9E77;
+    --accent:#FFF35A;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
-    --mixbase:#0D1F17;
+    --mixbase:#042A1E;
   }
 }
 /* ---------- Sombre : choix explicite (réservé, pas de bouton en V1) ---------- */
 :root[data-theme="dark"]{
-  --ground:#0D1F17;
-  --surface:#142E22;
-  --surface-2:#1B3A2B;
-  --surface-3:#234835;
+  --ground:#042A1E;
+  --surface:#0A3A2A;
+  --surface-2:#104631;
+  --surface-3:#17533C;
   --ink:#E7F1E9;
   --ink-2:#A2B8AA;
   --ink-3:#83A08D;
   --line:rgba(231,241,233,.14);
   --line-2:rgba(231,241,233,.26);
-  --pine:#4E9E77;
+  --accent:#FFF35A;
   --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
-  --mixbase:#0D1F17;
+  --mixbase:#042A1E;
 }
 
 /* ---------- Base ---------- */
@@ -92,7 +109,7 @@ body{
   line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
-:focus-visible{outline:2px solid var(--pine);outline-offset:3px;border-radius:4px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
 #resultats:focus{outline:none}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -102,20 +119,45 @@ body{
 
 .skip{
   position:absolute;left:-9999px;top:0;z-index:10;
-  background:var(--pine);color:#fff;padding:.6rem 1rem;border-radius:0 0 8px 0;font-weight:700;
+  background:var(--brunswick);color:var(--mais);padding:.6rem 1rem;border-radius:0 0 8px 0;font-weight:700;
 }
 .skip:focus{left:0}
 
 /* ---------- En-tête et pied ---------- */
-.page-head{padding:clamp(1.75rem,5vw,3rem) 0 clamp(1rem,3vw,1.5rem)}
-h1{
-  font-family:var(--f-display);font-variation-settings:"wdth" 115;
-  font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:1;
-  font-size:clamp(2rem,6vw,3.25rem);margin:0;
+/* ---------- Bandeau de titre ----------
+   L'arrangement du logo, repris tel quel : Vert Brunswick au fond,
+   Maïs au premier plan. C'est le seul endroit de la page où la couleur
+   de marque occupe une surface — ailleurs ce sont les douze couleurs
+   des pôles qui parlent, et deux systèmes de couleur qui se disputent
+   la même surface ne veulent plus rien dire ni l'un ni l'autre. */
+.page-head{
+  background:var(--brunswick);
+  padding:clamp(1.5rem,4vw,2.5rem) 0 clamp(1.4rem,3.5vw,2rem);
+  margin-bottom:1.5rem;
 }
-/* Pas de max-width : la phrase tient sur une ligne sur grand écran, et
-   text-wrap:balance répartit proprement quand elle doit se couper. */
-.lede{color:var(--ink-2);margin:.6rem 0 0;font-size:1.02rem;text-wrap:balance}
+.page-head .wrap{display:flex;align-items:center;gap:clamp(.9rem,3vw,1.5rem)}
+/* L'écusson est fourni sur un fond blanc carré : on le détoure en disque,
+   ce qui lui laisse un liseré blanc. C'est assumé — c'est un écusson, il
+   se porte comme un patch. Un PNG détouré permettrait de s'en passer. */
+.logo{
+  flex:0 0 auto;width:clamp(3.4rem,10vw,5rem);aspect-ratio:1;
+  border-radius:50%;overflow:hidden;background:#fff;
+}
+.logo img{width:100%;height:100%;object-fit:cover;display:block}
+.titres{min-width:0}
+h1{
+  font-family:var(--f-display);
+  font-weight:800;font-style:italic;text-transform:uppercase;
+  letter-spacing:-.01em;line-height:1;
+  font-size:clamp(1.75rem,5.5vw,3rem);margin:0;
+  color:var(--mais);
+}
+/* Le filet court sous le titre : la signature graphique de la charte. */
+h1::after{
+  content:"";display:block;height:4px;width:2.6rem;
+  background:var(--mais);margin-top:.55rem;border-radius:2px;
+}
+.lede{color:rgba(255,255,255,.82);margin:.7rem 0 0;font-size:1rem;text-wrap:balance}
 .page-foot{
   margin-top:3rem;padding:1.5rem 0 3rem;border-top:1px solid var(--line);
   color:var(--ink-3);font-size:.82rem;
@@ -138,7 +180,7 @@ h1{
   background:transparent;border:0;border-radius:6px;padding:.45rem .75rem;cursor:pointer;
   transition:background .14s ease,color .14s ease;
 }
-.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.seg button[aria-pressed="true"]{background:var(--mais);color:#084C37;box-shadow:var(--shadow)}
 .seg button:hover:not([aria-pressed="true"]){color:var(--ink)}
 .search{
   flex:1 1 10rem;min-width:0;font-family:inherit;font-size:.9rem;color:var(--ink);
@@ -182,8 +224,7 @@ h1{
 .band-head{border-left:4px solid var(--c);padding-left:.9rem;display:grid;gap:.3rem}
 .band-title{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
 .band-title h2{
-  margin:0;font-family:var(--f-display);font-variation-settings:"wdth" 112;
-  font-weight:800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.005em;
+  margin:0;font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.005em;
   color:var(--cl, var(--ink));
 }
 .band-n{font-size:.72rem;font-weight:700;color:var(--ink-3);font-variant-numeric:tabular-nums}
@@ -232,8 +273,7 @@ h1{
 .who{min-width:0;display:flex;flex-direction:column;gap:.12rem}
 .nickrow{display:flex;align-items:baseline;gap:.32rem;flex-wrap:wrap}
 .nick{
-  font-family:var(--f-display);font-variation-settings:"wdth" 104;
-  font-weight:800;font-size:1.02rem;line-height:1.1;letter-spacing:-.01em;
+  font-family:var(--f-display);font-weight:800;font-size:1.02rem;line-height:1.1;letter-spacing:-.01em;
 }
 .pron{
   font-size:.66rem;font-weight:650;line-height:1;color:var(--ink-3);
@@ -276,8 +316,7 @@ h1{
 .zoom-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .zoom-av.none{background:var(--surface-3);color:var(--ink-3);box-shadow:inset 0 0 0 2px var(--line-2)}
 .zoom-name{
-  font-family:var(--f-display);font-variation-settings:"wdth" 108;
-  font-weight:800;font-size:1.8rem;line-height:1.05;letter-spacing:-.015em;margin:0;
+  font-family:var(--f-display);font-weight:800;font-size:1.8rem;line-height:1.05;letter-spacing:-.015em;margin:0;
 }
 .zoom-pron{font-size:.8rem;font-weight:650;color:var(--ink-3)}
 .zoom-full{font-size:.95rem;color:var(--ink-2);margin:0}

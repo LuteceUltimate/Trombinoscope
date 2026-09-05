@@ -26,7 +26,7 @@ index.html            la page
 assets/styles.css     tout le style : jetons de couleur, thème clair/sombre, composants
 assets/data.js        chargement + validation + normalisation des données
 assets/app.js         état, filtres, tri, rendu, vue agrandie
-assets/fonts/         Archivo et Public Sans en woff2 (licence SIL OFL)
+assets/fonts/         Urbanist en woff2, romain et italique (licence SIL OFL)
 data/poles.json       les douze pôles
 data/membres.json     les membres
 photos/               une image par personne (voir photos/README.md)
@@ -180,6 +180,41 @@ Les deux points disparaissent le jour du passage sur Cloudflare : l'étape de
 construction rapatriera les photos une bonne fois, servies depuis la même
 origine que le reste. Le tableur restera la source de vérité, et rien d'autre
 ne changera.
+
+## Charte graphique
+
+Deux couleurs, celles du logo : **Maïs `#FFF35A`** et **Vert Brunswick
+`#084C37`**. Elles sont écrites en dur dans `assets/styles.css` — ce sont des
+valeurs de marque, pas des données : elles ne changent pas avec la saison,
+contrairement aux couleurs des pôles qui, elles, vivent dans le tableur.
+
+**La règle à ne pas casser : le Maïs est une surface, jamais une encre.** Sur
+blanc il donne un contraste de 1,2:1 — illisible. Sur le Vert Brunswick, 8,7:1
+dans les deux sens. D'où l'usage qu'en fait la charte, et que la page reprend :
+jaune sur vert, vert sur jaune, et rien d'autre. Le bandeau de titre est le seul
+endroit où la couleur de marque occupe une surface ; partout ailleurs ce sont
+les douze couleurs des pôles qui parlent.
+
+Le thème sombre dérive son fond du Vert Brunswick (`#042A1E`) et prend le Maïs
+comme accent : c'est littéralement l'arrangement du logo.
+
+**La police est Urbanist**, pas Century Gothic. Century Gothic appartient à
+Monotype et ne peut pas être livrée dans un dépôt — c'est une limite juridique,
+pas technique. Urbanist est la géométrique libre (SIL OFL) la plus proche de son
+allure : ce qui distingue Century Gothic de Futura, c'est sa grande hauteur d'x
+et ses panses larges et rondes, et c'est exactement le caractère d'Urbanist.
+Elle est auto-hébergée, en romain et en italique, donc tout le monde voit la
+même page. `Century Gothic` figure quand même en second dans la pile, sans
+conséquence pour la mise en page.
+
+Le geste graphique du document est repris : **titre en capitales, gras
+italique, souligné d'un filet court**. Les bandeaux de pôle gardent leur filet
+vertical coloré — y ajouter du Maïs ferait se disputer deux couleurs sur le
+même objet.
+
+**L'écusson** est fourni sur un fond blanc carré ; la page le détoure en disque,
+ce qui lui laisse un mince liseré blanc. C'est assumé — un écusson se porte
+comme un patch. Un PNG détouré permettrait de s'en passer.
 
 ## Prochaine étape
 
