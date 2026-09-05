@@ -17,9 +17,10 @@
    Laisser vide fait tourner le site sur les instantanés locaux.
    ------------------------------------------------------------ */
 export const SOURCE = {
+  // Onglet « Pôles »   : Nom | Couleur | Nombre personnes | Description | Lien discord
   polesCSV:   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQdhs4kUMHzROG-BMBG44YE4eRa6AJ1dqtWGaeGNVPZ52a2mPPU7LzIAD0DIa2Ids_IqMyVVC38BGxk/pub?gid=299606187&single=true&output=csv",
-  // TODO l'onglet Membres n'est pas encore publie : gid=0 repond 401.
-  membresCSV: "",
+  // Onglet « Membres » : Prénom | Nom | Surnom | Pronoms | Pôle 1 | Pôle 2
+  membresCSV: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQdhs4kUMHzROG-BMBG44YE4eRa6AJ1dqtWGaeGNVPZ52a2mPPU7LzIAD0DIa2Ids_IqMyVVC38BGxk/pub?gid=0&single=true&output=csv",
 
   // Filet de secours, toujours présent dans le dépôt.
   polesJSON:   "data/poles.json",
